@@ -1,5 +1,5 @@
 
-include <servos.scad>
+//include <servos.scad>
 //include <MCAD/units.scad>
 
 $fn = 25;
@@ -13,6 +13,7 @@ SERVO_WIDTH = 20;
 
 CHANFREIN = 7;
 
+LEG_THICKNESS = 4;
 LEG_HOLE_DIAMETER = 2.5;
 
 module support() {
@@ -35,29 +36,29 @@ module support() {
                     cube(size = [17.5 - CHANFREIN, SERVO_WIDTH, 12.5]);
 
 
-translate([BODY_WIDTH, 7, 0]) {
-    difference() {
-        cube(size = [LEG_THICKNESS * 1.3, 17, BODY_HEIGHT]);
+                // Leg holder
+                translate([BODY_WIDTH, 7, 0]) {
+                    difference() {
+                        cube(size = [LEG_THICKNESS * 1.3, 17, BODY_HEIGHT]);
 
-        translate([0, LEG_THICKNESS, -1])
-            cube(size = [LEG_THICKNESS, 100, BODY_HEIGHT + 3]);
-    }
-}
+                        translate([0, LEG_THICKNESS, -1])
+                            cube(size = [LEG_THICKNESS, 100, BODY_HEIGHT + 3]);
+                    }
+                }
 
-translate([ - LEG_THICKNESS * 1.3, 7, 0]) {
-    difference() {
-        cube(size = [LEG_THICKNESS * 1.3, 17, BODY_HEIGHT]);
+                translate([ - LEG_THICKNESS * 1.3, 7, 0]) {
+                    difference() {
+                        cube(size = [LEG_THICKNESS * 1.3, 17, BODY_HEIGHT]);
 
-        translate([LEG_THICKNESS * 1.3 - LEG_THICKNESS, LEG_THICKNESS, -1])
-            cube(size = [LEG_THICKNESS, 100, BODY_HEIGHT + 3]);
-    }
-}
-
+                        translate([LEG_THICKNESS * 1.3 - LEG_THICKNESS, LEG_THICKNESS, -1])
+                            cube(size = [LEG_THICKNESS, 100, BODY_HEIGHT + 3]);
+                    }
+                }
             }
 
             // Hole for leg
-            translate([-1, BODY_WIDTH - 10, 10]) rotate([0, 90, 0]) cylinder(h = 100, r = LEG_HOLE_DIAMETER);
-            translate([-1, BODY_WIDTH - 10, 50]) rotate([0, 90, 0]) cylinder(h = 100, r = LEG_HOLE_DIAMETER);
+            translate([-50, BODY_WIDTH - 10, 10]) rotate([0, 90, 0]) cylinder(h = 100, r = LEG_HOLE_DIAMETER);
+            translate([-50, BODY_WIDTH - 10, 50]) rotate([0, 90, 0]) cylinder(h = 100, r = LEG_HOLE_DIAMETER);
 
             // Servo hole
             translate([-1, - 5, 9]) rotate([0, 90, 0]) cylinder(h = 30, r = 0.5);
@@ -118,16 +119,15 @@ translate([ - LEG_THICKNESS * 1.3, 7, 0]) {
 //        polygon([[0, 0], [0, 10], [5, 10], [5, 5]]);
 }
 
-LEG_THICKNESS = 5;
 
-//translate([-14, -10, 0]) {
+translate([-14, -10, 0]) {
     support();
 
 
     if (DEBUG) {
         color("GREY") translate([-9, -20.1, 13]) rotate([90, 0, 90]) futabas3003();
     }
-//}
+}
 
 
 //cube(275, 275, 650, center = true);
