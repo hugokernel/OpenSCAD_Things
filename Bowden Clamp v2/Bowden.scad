@@ -34,6 +34,7 @@ capHeight = 24;
 capTopThickness = 4;
 capOuterDiameter = 24.5;
 
+holesTubeRadius = 5;
 
 //*****************************************************************************
 //******************* OTHER VARIABLES *****************************************
@@ -107,14 +108,26 @@ module base(){
             translate ([baseWidth / 2 - baseLegWidth / 2, 0, baseHeight / 2])
                 roundedBox([baseLegWidth, baseWidth, baseHeight],baseCornerRadius,true);
         }
-            translate ([outsideHolesFromCentre,outsideHolesFromCentre,-1])
-                cylinder(r = outsideHolesRadius + oHR_Allow, h = baseHeight * 2);
-            translate ([outsideHolesFromCentre,-outsideHolesFromCentre,-1])
-                cylinder(r = outsideHolesRadius + oHR_Allow, h = baseHeight * 2);
-            translate ([-outsideHolesFromCentre,-outsideHolesFromCentre,-1])
-                cylinder(r = outsideHolesRadius + oHR_Allow, h = baseHeight * 2);
-            translate ([-outsideHolesFromCentre,outsideHolesFromCentre,-1])
-                cylinder(r = outsideHolesRadius + oHR_Allow, h = baseHeight * 2);
+
+        // Holes on each corner
+        translate ([outsideHolesFromCentre,outsideHolesFromCentre,-1])
+            cylinder(r = outsideHolesRadius + oHR_Allow, h = baseHeight * 2);
+        translate ([outsideHolesFromCentre,-outsideHolesFromCentre,-1])
+            cylinder(r = outsideHolesRadius + oHR_Allow, h = baseHeight * 2);
+        translate ([-outsideHolesFromCentre,-outsideHolesFromCentre,-1])
+            cylinder(r = outsideHolesRadius + oHR_Allow, h = baseHeight * 2);
+        translate ([-outsideHolesFromCentre,outsideHolesFromCentre,-1])
+            cylinder(r = outsideHolesRadius + oHR_Allow, h = baseHeight * 2);
+
+        
+        translate([insideHolesFromCentre, insideHolesFromCentre, -stlClearance])
+                cylinder(r = holesTubeRadius, h = tubeBottom + stlClearance);
+
+        translate([-insideHolesFromCentre, -insideHolesFromCentre, -stlClearance])
+                cylinder(r = holesTubeRadius, h = tubeBottom + stlClearance);
+
+        translate([-insideHolesFromCentre, insideHolesFromCentre, -stlClearance])
+                cylinder(r = holesTubeRadius, h = tubeBottom + stlClearance);
     }
 }
 
