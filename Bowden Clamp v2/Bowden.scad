@@ -96,9 +96,9 @@ module base(){
         union(){
             difference(){
                 translate([0, 0, baseHeight / 2])roundedBox([baseWidth,baseWidth,baseHeight],baseCornerRadius,true);
-                    rotate ([0,0,45])
-                        translate ([-baseWidth,-centreToInsideBase, -baseHeight / 2])
-                            cube([2 * baseWidth, baseWidth, 2 * baseHeight]);
+                    //rotate ([0,0,45])
+                        //translate ([-baseWidth,-centreToInsideBase, -baseHeight / 2])
+                          //  cube([2 * baseWidth, baseWidth, 2 * baseHeight]);
             }
             translate ([0,-baseWidth / 2 + baseLegWidth / 2, fanSideBaseHeight / 2])
                 roundedBox([baseWidth, baseLegWidth, fanSideBaseHeight],baseCornerRadius,true);
@@ -112,6 +112,8 @@ module base(){
             translate ([outsideHolesFromCentre,-outsideHolesFromCentre,-1])
                 cylinder(r = outsideHolesRadius + oHR_Allow, h = baseHeight * 2);
             translate ([-outsideHolesFromCentre,-outsideHolesFromCentre,-1])
+                cylinder(r = outsideHolesRadius + oHR_Allow, h = baseHeight * 2);
+            translate ([-outsideHolesFromCentre,outsideHolesFromCentre,-1])
                 cylinder(r = outsideHolesRadius + oHR_Allow, h = baseHeight * 2);
     }
 }
