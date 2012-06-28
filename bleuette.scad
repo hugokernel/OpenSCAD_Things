@@ -44,6 +44,15 @@ translate([BODY_WIDTH, 7, 0]) {
     }
 }
 
+translate([ - LEG_THICKNESS * 1.3, 7, 0]) {
+    difference() {
+        cube(size = [LEG_THICKNESS * 1.3, 17, BODY_HEIGHT]);
+
+        translate([LEG_THICKNESS * 1.3 - LEG_THICKNESS, LEG_THICKNESS, -1])
+            cube(size = [LEG_THICKNESS, 100, BODY_HEIGHT + 3]);
+    }
+}
+
             }
 
             // Hole for leg
@@ -111,14 +120,14 @@ translate([BODY_WIDTH, 7, 0]) {
 
 LEG_THICKNESS = 5;
 
-translate([-14, -10, 0]) {
+//translate([-14, -10, 0]) {
     support();
 
 
     if (DEBUG) {
         color("GREY") translate([-9, -20.1, 13]) rotate([90, 0, 90]) futabas3003();
     }
-}
+//}
 
 
 //cube(275, 275, 650, center = true);
