@@ -1,6 +1,5 @@
 
-//include <servos.scad>
-//include <MCAD/units.scad>
+include <servos.scad>
 
 $fn = 25;
 
@@ -9,14 +8,59 @@ BODY_HEIGHT = 65.0;
 BODY_WIDTH = 27.5;
 
 SERVO_HOLE_DIAMETER = 0.5;
-SERVO_WIDTH = 20;
+SERVO_WIDTH = 24;
+SERVO_LENGTH = 53.5;
 
-CHANFREIN = 7;
+CHANFREIN = 4;
 
 LEG_THICKNESS = 4;
 LEG_HOLE_DIAMETER = 2.5;
 
+CONNECTION_WIDTH = 8;
+
+SERVO_HOLDER_HEIGHT = 11.5;
+
+
+module servo_holder() {
+
+    rotate([0, 0, 0]) {
+        translate([-(17.5 - CHANFREIN) / 2, 0, - (SERVO_HOLDER_HEIGHT - CONNECTION_WIDTH / 2)]) {
+            difference() {
+                // Servo holder
+                cube(size = [17.5 - CHANFREIN, SERVO_WIDTH, SERVO_HOLDER_HEIGHT]);
+
+                // Servo hole
+                // Not precise...
+                //translate([-20, 8, 8]) rotate([0, 90, 0]) cylinder(h = 50, r = SERVO_HOLE_DIAMETER);
+                //translate([-20, 18, 8]) rotate([0, 90, 0]) cylinder(h = 50, r = SERVO_HOLE_DIAMETER);
+
+                // Servo holder chanfrein
+                translate([SERVO_WIDTH, 20, -0.1])
+                    rotate([0, -90, 0])
+                        linear_extrude(height = 30)
+                            polygon([[0, 0], [0, -SERVO_WIDTH - 0.1], [4, -SERVO_WIDTH]]);
+            }
+
+            translate([(17.5 - CHANFREIN) / 2, SERVO_WIDTH, SERVO_HOLDER_HEIGHT - CONNECTION_WIDTH / 2]) {
+                difference() {
+                    cube(size = [CONNECTION_WIDTH, CONNECTION_WIDTH, CONNECTION_WIDTH], center = true);
+                    cube(size = [CONNECTION_WIDTH / 2.5, CONNECTION_WIDTH, CONNECTION_WIDTH], center = true);
+                }
+            }
+        }
+    }
+}
+
 module support() {
+
+    module support_servo_holder() {
+        translate([CHANFREIN + 17.5 / 2 - 2, -SERVO_WIDTH, SERVO_LENGTH + 4]) // 57
+            rotate([0, 180, 0])
+                servo_holder();
+
+        translate([CHANFREIN + 17.5 / 2 - 2, -SERVO_WIDTH, SERVO_HOLDER_HEIGHT - 3])
+            servo_holder();
+    }
 
     difference() {
         difference() {
@@ -26,29 +70,27 @@ module support() {
 
                     // Main hole
                     translate([13.75, 10, 0]) cylinder(h = 65, r = 3);
+
+                    support_servo_holder();
                 }
 
-                // Servo holder
-                translate([CHANFREIN, -SERVO_WIDTH, 53.5])
-                    cube(size = [17.5 - CHANFREIN, SERVO_WIDTH, 11.5]);
-
-                translate([CHANFREIN, -SERVO_WIDTH, 0])
-                    cube(size = [17.5 - CHANFREIN, SERVO_WIDTH, 12.5]);
-
+                if (DEBUG) {
+                    support_servo_holder();
+                }
 
                 // Leg holder
-                translate([BODY_WIDTH, 7, 0]) {
+                translate([BODY_WIDTH, 4, 0]) {
                     difference() {
-                        cube(size = [LEG_THICKNESS * 1.3, 17, BODY_HEIGHT]);
+                        cube(size = [LEG_THICKNESS * 1.3, 19, BODY_HEIGHT]);
 
                         translate([0, LEG_THICKNESS, -1])
                             cube(size = [LEG_THICKNESS, 100, BODY_HEIGHT + 3]);
                     }
                 }
 
-                translate([ - LEG_THICKNESS * 1.3, 7, 0]) {
+                translate([ - LEG_THICKNESS * 1.3, 4, 0]) {
                     difference() {
-                        cube(size = [LEG_THICKNESS * 1.3, 17, BODY_HEIGHT]);
+                        cube(size = [LEG_THICKNESS * 1.3, 19, BODY_HEIGHT]);
 
                         translate([LEG_THICKNESS * 1.3 - LEG_THICKNESS, LEG_THICKNESS, -1])
                             cube(size = [LEG_THICKNESS, 100, BODY_HEIGHT + 3]);
@@ -59,13 +101,6 @@ module support() {
             // Hole for leg
             translate([-50, BODY_WIDTH - 10, 10]) rotate([0, 90, 0]) cylinder(h = 100, r = LEG_HOLE_DIAMETER);
             translate([-50, BODY_WIDTH - 10, 50]) rotate([0, 90, 0]) cylinder(h = 100, r = LEG_HOLE_DIAMETER);
-
-            // Servo hole
-            translate([-1, - 5, 9]) rotate([0, 90, 0]) cylinder(h = 30, r = 0.5);
-            translate([-1, - 15, 9]) rotate([0, 90, 0]) cylinder(h = 30, r = 0.5);
-
-            translate([-1, - 5, 53.5 + 4]) rotate([0, 90, 0]) cylinder(h = 30, r = SERVO_HOLE_DIAMETER);
-            translate([-1, - 15, 53.5 + 4]) rotate([0, 90, 0]) cylinder(h = 30, r = SERVO_HOLE_DIAMETER);
         }
 
         // Reduce size
@@ -79,17 +114,6 @@ module support() {
 
         translate([BODY_WIDTH / 2, BODY_HEIGHT / 2, -1])
             cylinder(r = 10, h = BODY_HEIGHT + 1);
-
-        // Servo holder chanfrein
-        translate([20, 0, -0.1])
-            rotate([0, -90, 0])
-                linear_extrude(height = 30)
-                    polygon([[0, 0], [0, -SERVO_WIDTH - 0.1], [4, -SERVO_WIDTH]]);
-
-        translate([20, 0, 65])
-            rotate([0, -90, 0])
-                linear_extrude(height = 30)
-                    polygon([[0, 0], [0, -SERVO_WIDTH - 0.1], [-4, -SERVO_WIDTH]]);
     }
 
     // Rudder
@@ -116,20 +140,15 @@ module support() {
 
         }
     }
-//        polygon([[0, 0], [0, 10], [5, 10], [5, 5]]);
 }
 
+//servo_holder();
 
 translate([-14, -10, 0]) {
     support();
-
 
     if (DEBUG) {
         color("GREY") translate([-9, -20.1, 13]) rotate([90, 0, 90]) futabas3003();
     }
 }
-
-
-//cube(275, 275, 650, center = true);
-
 
