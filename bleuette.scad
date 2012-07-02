@@ -1,5 +1,5 @@
 
-include <servos.scad>
+//include <servos.scad>
 
 $fn = 25;
 
@@ -113,7 +113,7 @@ module support() {
         }
 
         translate([BODY_WIDTH / 2, BODY_HEIGHT / 2, -1])
-            cylinder(r = 10, h = BODY_HEIGHT + 1);
+            cylinder(r = 10, h = BODY_HEIGHT + 1, $fn = 10);
     }
 
     // Rudder
@@ -142,7 +142,7 @@ module support() {
     }
 }
 
-//servo_holder();
+//translate([0, 0, 4]) rotate([0, 180, 0]) servo_holder();
 
 translate([-14, -10, 0]) {
     support();
