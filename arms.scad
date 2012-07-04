@@ -1,6 +1,14 @@
 
 $fn = 20;
 
+//BRACE_WIDTH = 5;
+BRACE_LENGTH = 7;
+
+ARMS_SPACING = 20;
+
+ARM_THICKNESS = 4;
+ARM_WIDTH = 20;
+
 module arm(width, length, height, hole = [5, 5], gap_width = 0, gap_length = 0) {
 
     difference() {
@@ -41,14 +49,9 @@ module long_arm() {
     }
 }
 
-//long_arm();
-
-// Basic arm
-//arm(15, 80, 4, [5, 5], 0, 0);
-
 module main_arm() {
 
-    size = [ 20, 120, 4 ];
+    size = [ ARM_WIDTH, 120, ARM_THICKNESS ];
     radius = 5;
 
     difference() {
@@ -62,15 +65,127 @@ module main_arm() {
             }
         }
 
-        translate([ size[0] / 2 - 12, - size[1] / 2 + 7.5, -5]) {
-            cylinder(h = 10, r1 = 2.5, r2 = 2.5);
+        // Hole
+        union() {
+            translate([ size[0] / 2 - 12, - size[1] / 2 + 7.5, -5]) {
+                cylinder(h = 10, r1 = 2.5, r2 = 2.5);
+            }
+
+            translate([ size[0] / 2 - 12, - size[1] / 2 + 47.5, -5]) {
+                cylinder(h = 10, r1 = 2.5, r2 = 2.5);
+            }
         }
 
-        translate([ size[0] / 2 - 12, - size[1] / 2 + 47.5, -5]) {
-            cylinder(h = 10, r1 = 2.5, r2 = 2.5);
+        // Brace hole
+        union() {
+            translate([0, size[1] / 2 - 15, 0]) {
+                cube(size = [ BRACE_LENGTH, ARM_THICKNESS, 10 ], center = true);
+            }
+
+            translate([0, - size[1] / 2 + 27, 0]) {
+                cube(size = [ BRACE_LENGTH, ARM_THICKNESS, 10 ], center = true);
+            }
         }
     }
 }
 
-main_arm();
+module brace() {
+
+    size = [ ARMS_SPACING, ARM_WIDTH, ARM_THICKNESS ];
+
+    difference() {
+        union() {
+            cube(size, center = true);
+            cube(size = [ size[0] + size[2] * 2, BRACE_LENGTH, ARM_THICKNESS ], center = true);
+
+            translate([ 0, 0, size[2] ]) {
+                cube(size = [ size[0], BRACE_LENGTH, ARM_THICKNESS ], center = true);
+            }
+
+            translate([ 0, 0, size[2] / 2]) {
+                cylinder(h = size[2], r1 = 5, r2 = 5);
+            }
+        }
+
+        translate([ 0, 0, -10 ]) {
+            cylinder(h = 100, r1 = 2.5, r2 = 2.5);
+        }
+    }
+}
+
+//main_arm();
+
+//brace();
+
+//long_arm();
+
+// Basic arm
+//arm(15, 80, 4, [5, 5], 0, 0);
+
+module mounted_arm() {
+
+    translate([ 0, 0, ARM_THICKNESS / 2 ]) {
+        main_arm();
+
+        translate([ 0, 0, ARMS_SPACING + ARM_THICKNESS]) {
+            rotate([ 0, 0, 0 ]) {
+                main_arm();
+            }
+        }
+
+        translate([ 0, -33, ARMS_SPACING / 2 + ARM_THICKNESS / 2 ]) {
+            rotate([ 0, 90, 90 ]) {
+                brace();
+            }
+        }
+
+        translate([ 0, 45, ARMS_SPACING / 2 + ARM_THICKNESS / 2 ]) {
+            rotate([ 0, 90, -90 ]) {
+                brace();
+            }
+        }
+    }
+
+    translate([ -69, -52, - ARM_THICKNESS]) {
+        rotate([ 0, 0, 90]) {
+            long_arm();
+        }
+    }
+
+    translate([ -42, -52, ARMS_SPACING + ARM_THICKNESS * 2]) {
+        rotate([ 0, 0, 90]) {
+            arm(15, 80, 4, [5, 5, 0, 0]);
+        }
+    }
+
+    translate([ -42, -12, ARMS_SPACING + ARM_THICKNESS * 2]) {
+        rotate([ 0, 0, 90]) {
+            arm(15, 80, 4, [5, 5, 0, 0]);
+        }
+    }
+
+    translate([ -42, -12, - ARM_THICKNESS]) {
+        rotate([ 0, 0, 90]) {
+            arm(15, 80, 4, [5, 5, 0, 0]);
+        }
+    }
+}
+
+/*
+
+include <servos.scad>
+include <bleuette.scad>;
+DEBUG = 1;
+
+translate([-100, ARMS_SPACING + 8, 0]) {
+    rotate([0, 0, -90]) {
+        support();
+
+        color("GREY") translate([-9, -20.1, 13]) rotate([90, 0, 90]) futabas3003();
+    }
+}
+*/
+
+rotate([ -90, 0, 0])
+mounted_arm();
 
