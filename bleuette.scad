@@ -3,7 +3,7 @@
 
 $fn = 25;
 
-DEBUG = 1;
+DEBUG = 0;
 BODY_HEIGHT = 65.0;
 BODY_WIDTH = 27.5;
 
@@ -78,23 +78,33 @@ module support() {
                     support_servo_holder();
                 }
 
-                // Leg holder
+                // Right leg holder
                 translate([BODY_WIDTH, 4, 0]) {
                     difference() {
                         cube(size = [LEG_THICKNESS * 1.3, 19, BODY_HEIGHT]);
 
                         translate([0, LEG_THICKNESS, -1])
-                            cube(size = [LEG_THICKNESS, 100, BODY_HEIGHT + 3]);
+                            cube(size = [LEG_THICKNESS, 100, BODY_HEIGHT - 2]);
+
+                        translate([0, LEG_THICKNESS - 5, BODY_HEIGHT / 2])
+                            cube(size = [LEG_THICKNESS, 100, BODY_HEIGHT / 2 - 3]);
                     }
+
+                    translate([0, 0, BODY_HEIGHT / 2 - 3])
+                        cube(size = [LEG_THICKNESS, 19, 3]);
                 }
 
+                // Left leg holder
                 translate([ - LEG_THICKNESS * 1.3, 4, 0]) {
                     difference() {
                         cube(size = [LEG_THICKNESS * 1.3, 19, BODY_HEIGHT]);
 
                         translate([LEG_THICKNESS * 1.3 - LEG_THICKNESS, LEG_THICKNESS, -1])
-                            cube(size = [LEG_THICKNESS, 100, BODY_HEIGHT + 3]);
+                            cube(size = [LEG_THICKNESS, 100, BODY_HEIGHT - 2]);
                     }
+
+                    translate([1, 0, BODY_HEIGHT / 2 - 3])
+                        cube(size = [LEG_THICKNESS, 19, 3]);
                 }
             }
 
