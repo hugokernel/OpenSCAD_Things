@@ -1,9 +1,9 @@
 
-//include <servos.scad>
+include <servos.scad>
 
 $fn = 25;
 
-DEBUG = 0;
+DEBUG = true;
 BODY_HEIGHT = 65.0;
 BODY_WIDTH = 27.5;
 
@@ -19,15 +19,16 @@ LEG_HOLE_DIAMETER = 2.5;
 CONNECTION_WIDTH = 8;
 
 SERVO_HOLDER_HEIGHT = 11.5;
+SERVO_HOLDER_WIDTH = 15.5;
 
 
 module servo_holder() {
 
     rotate([0, 0, 0]) {
-        translate([-(17.5 - CHANFREIN) / 2, 0, - (SERVO_HOLDER_HEIGHT - CONNECTION_WIDTH / 2)]) {
+        translate([-(SERVO_HOLDER_WIDTH - CHANFREIN) / 2, 0, - (SERVO_HOLDER_HEIGHT - CONNECTION_WIDTH / 2)]) {
             difference() {
                 // Servo holder
-                cube(size = [17.5 - CHANFREIN, SERVO_WIDTH, SERVO_HOLDER_HEIGHT]);
+                cube(size = [SERVO_HOLDER_WIDTH - CHANFREIN, SERVO_WIDTH, SERVO_HOLDER_HEIGHT]);
 
                 // Servo hole
                 // Not precise...
@@ -41,7 +42,7 @@ module servo_holder() {
                             polygon([[0, 0], [0, -SERVO_WIDTH - 0.1], [4, -SERVO_WIDTH]]);
             }
 
-            translate([(17.5 - CHANFREIN) / 2, SERVO_WIDTH, SERVO_HOLDER_HEIGHT - CONNECTION_WIDTH / 2]) {
+            translate([(SERVO_HOLDER_WIDTH - CHANFREIN) / 2, SERVO_WIDTH, SERVO_HOLDER_HEIGHT - CONNECTION_WIDTH / 2]) {
                 difference() {
                     cube(size = [CONNECTION_WIDTH, CONNECTION_WIDTH, CONNECTION_WIDTH], center = true);
                     cube(size = [CONNECTION_WIDTH / 2.5, CONNECTION_WIDTH, CONNECTION_WIDTH], center = true);
@@ -54,11 +55,11 @@ module servo_holder() {
 module support() {
 
     module support_servo_holder() {
-        translate([CHANFREIN + 17.5 / 2 - 2, -SERVO_WIDTH, SERVO_LENGTH + 4]) // 57
+        translate([CHANFREIN + SERVO_HOLDER_WIDTH / 2 - 2, -SERVO_WIDTH, SERVO_LENGTH + 4]) // 57
             rotate([0, 180, 0])
                 servo_holder();
 
-        translate([CHANFREIN + 17.5 / 2 - 2, -SERVO_WIDTH, SERVO_HOLDER_HEIGHT - 3])
+        translate([CHANFREIN + SERVO_HOLDER_WIDTH / 2 - 2, -SERVO_WIDTH, SERVO_HOLDER_HEIGHT - 3])
             servo_holder();
     }
 

@@ -1,8 +1,9 @@
 
 $fn = 20;
 
-//BRACE_WIDTH = 5;
-BRACE_LENGTH = 7;
+DEMO = true;
+
+SPACER_LENGTH = 6;
 
 ARMS_SPACING = 20;
 
@@ -43,9 +44,21 @@ module arm(width, length, height, hole = [5, 5], gap_width = 0, gap_length = 0) 
 module long_arm() {
     difference() {
         arm(15, 135, 4, [5, 1], 0, 0);
-        
-        translate([0, 12.5, -1])
+
+        translate([0, 12.5, -1]) {
             cylinder(h = 20, r1 = 2.5, r2 = 2.5);
+        }
+
+        translate([0, - 27, 0]) {
+            cube(size = [ SPACER_LENGTH, ARM_THICKNESS, 10 ], center = true);
+        }
+    }
+}
+
+module short_arm() {
+    difference() {
+        arm(15, 80, 4, [5, 5], 0, 0);
+        cube(size = [ SPACER_LENGTH, ARM_THICKNESS, 10 ], center = true);
     }
 }
 
@@ -76,34 +89,32 @@ module main_arm() {
             }
         }
 
-        // Brace hole
+        // Spacer hole
         union() {
             translate([0, size[1] / 2 - 15, 0]) {
-                cube(size = [ BRACE_LENGTH, ARM_THICKNESS, 10 ], center = true);
+                cube(size = [ SPACER_LENGTH, ARM_THICKNESS, 10 ], center = true);
             }
 
             translate([0, - size[1] / 2 + 27, 0]) {
-                cube(size = [ BRACE_LENGTH, ARM_THICKNESS, 10 ], center = true);
+                cube(size = [ SPACER_LENGTH, ARM_THICKNESS, 10 ], center = true);
             }
         }
     }
 }
 
-module brace() {
-
-    size = [ ARMS_SPACING, ARM_WIDTH, ARM_THICKNESS ];
+module spacer(length, width, thickness) {
 
     difference() {
         union() {
-            cube(size, center = true);
-            cube(size = [ size[0] + size[2] * 2, BRACE_LENGTH, ARM_THICKNESS ], center = true);
+            cube([ length, width, thickness ], center = true);
+            cube(size = [ length + thickness * 2, SPACER_LENGTH, ARM_THICKNESS ], center = true);
 
-            translate([ 0, 0, size[2] ]) {
-                cube(size = [ size[0], BRACE_LENGTH, ARM_THICKNESS ], center = true);
+            translate([ 0, 0, thickness ]) {
+                cube(size = [ length, SPACER_LENGTH, ARM_THICKNESS ], center = true);
             }
 
-            translate([ 0, 0, size[2] / 2]) {
-                cylinder(h = size[2], r1 = 5, r2 = 5);
+            translate([ 0, 0, thickness / 2]) {
+                cylinder(h = thickness, r1 = 5, r2 = 5);
             }
         }
 
@@ -112,15 +123,6 @@ module brace() {
         }
     }
 }
-
-//main_arm();
-
-//brace();
-
-//long_arm();
-
-// Basic arm
-//arm(15, 80, 4, [5, 5], 0, 0);
 
 module mounted_arm() {
 
@@ -135,38 +137,56 @@ module mounted_arm() {
 
         translate([ 0, -33, ARMS_SPACING / 2 + ARM_THICKNESS / 2 ]) {
             rotate([ 0, 90, 90 ]) {
-                brace();
+                spacer(ARMS_SPACING, ARM_WIDTH, ARM_THICKNESS);
             }
         }
 
         translate([ 0, 45, ARMS_SPACING / 2 + ARM_THICKNESS / 2 ]) {
             rotate([ 0, 90, -90 ]) {
-                brace();
+                spacer(ARMS_SPACING, ARM_WIDTH, ARM_THICKNESS);
             }
         }
     }
 
-    translate([ -69, -52, - ARM_THICKNESS]) {
-        rotate([ 0, 0, 90]) {
-            long_arm();
+    // Top arm
+    union() {
+        translate([ -69, -52, - ARM_THICKNESS]) {
+            rotate([ 0, 0, 90]) {
+                long_arm();
+            }
+
+            translate([ 27, 0, 18 ]) {
+                rotate([ 0, 90, 0 ]) {
+                    spacer(ARMS_SPACING + ARM_THICKNESS * 2, 15, ARM_THICKNESS);
+                }
+            }
+        }
+
+        translate([ -42, -52, ARMS_SPACING + ARM_THICKNESS * 2]) {
+            rotate([ 0, 0, 90]) {
+                short_arm();
+            }
         }
     }
 
-    translate([ -42, -52, ARMS_SPACING + ARM_THICKNESS * 2]) {
-        rotate([ 0, 0, 90]) {
-            arm(15, 80, 4, [5, 5, 0, 0]);
+    // Bottom arm
+    union() {
+        translate([ -42, -12, ARMS_SPACING + ARM_THICKNESS * 2]) {
+            rotate([ 0, 0, 90]) {
+                short_arm();
+            }
         }
-    }
 
-    translate([ -42, -12, ARMS_SPACING + ARM_THICKNESS * 2]) {
-        rotate([ 0, 0, 90]) {
-            arm(15, 80, 4, [5, 5, 0, 0]);
-        }
-    }
+        translate([ -42, -12, - ARM_THICKNESS]) {
+            rotate([ 0, 0, 90]) {
+                short_arm();
+            }
 
-    translate([ -42, -12, - ARM_THICKNESS]) {
-        rotate([ 0, 0, 90]) {
-            arm(15, 80, 4, [5, 5, 0, 0]);
+            translate([ 0, 0, 18 ]) {
+                rotate([ 0, 90, 0 ]) {
+                    spacer(ARMS_SPACING + ARM_THICKNESS * 2, 15, ARM_THICKNESS);
+                }
+            }
         }
     }
 }
@@ -186,6 +206,26 @@ translate([-100, ARMS_SPACING + 8, 0]) {
 }
 */
 
-rotate([ -90, 0, 0])
-mounted_arm();
+if (DEMO) {
+    rotate([ -90, 0, 0]) {
+        mounted_arm();
+    }
+} else {
+    main_arm();
+
+    translate([30, 0, 0]) {
+        long_arm();
+    }
+
+    // Basic arm
+    translate([60, -27, 0]) {
+        short_arm();
+    }
+
+    translate([60, 60, 0]) {
+        rotate([0, 0, 90]) {
+            spacer(ARMS_SPACING, ARM_WIDTH, ARM_THICKNESS);
+        }
+    }
+}
 
