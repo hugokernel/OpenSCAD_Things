@@ -19,7 +19,10 @@ LEG_HOLE_DIAMETER = 2.5;
 CONNECTION_WIDTH = 8;
 
 SERVO_HOLDER_HEIGHT = 11.5;
-SERVO_HOLDER_WIDTH = 15.5;
+SERVO_HOLDER_WIDTH = 18;
+
+WASHER_DIAMETER = 18;
+WASHER_HEIGHT = 2;
 
 
 module servo_holder() {
@@ -69,8 +72,18 @@ module support() {
                 difference() {
                     cube(size = [BODY_WIDTH, BODY_WIDTH, BODY_HEIGHT]);
 
-                    // Main hole
-                    translate([13.75, 10, 0]) cylinder(h = 65, r = 3);
+                    translate([13.75, 10, 0]) {
+                        // Main hole
+                        cylinder(h = 65, r = 3);
+                       
+                        if (WASHER_DIAMETER) {
+                            // Washer
+                            cylinder(r = WASHER_DIAMETER / 2, h = WASHER_HEIGHT / 2, center = true);
+                            
+                            translate([0, 0, BODY_HEIGHT])
+                                cylinder(r = WASHER_DIAMETER / 2, h = WASHER_HEIGHT / 2, center = true);
+                        }
+                    }
 
                     support_servo_holder();
                 }
@@ -133,20 +146,18 @@ module support() {
     rotate([0, 0, 45]) {
         translate([16.5, -21, 0]) {
 
-
             translate([2.5, 1, 0])
-                cube(size = [1, 9, RUDDER_CYLINDER_HEIGHT]);
-
+                cube(size = [1, 5, RUDDER_CYLINDER_HEIGHT]);
 
             difference() {
                 union() {
-                    cube(size = [6, 10, RUDDER_HEIGHT]);
+                    cube(size = [6, 7, RUDDER_HEIGHT]);
                     translate([3, 0, 0]) {
                         cylinder(r = 3, h = RUDDER_CYLINDER_HEIGHT);
                     }
                 }
 
-                translate([3, 0, -1]) cylinder(r = 1, h = 100);
+                translate([3, 0, -1]) cylinder(r = 0.7, h = 100);
             }
 
         }
@@ -155,11 +166,16 @@ module support() {
 
 //translate([0, 0, 4]) rotate([0, 180, 0]) servo_holder();
 
-translate([-14, -10, 0]) {
-    support();
+if (1) {
+    translate([-14, -10, 0]) {
+        support();
 
-    if (DEBUG) {
-        color("GREY") translate([-9, -20.1, 13]) rotate([90, 0, 90]) futabas3003();
+        if (DEBUG) {
+            color("GREY") 
+                translate([SERVO_HOLDER_WIDTH - 27, -1, BODY_HEIGHT - SERVO_HOLDER_HEIGHT - 0.5])
+                    rotate([90, 180, 90])
+                        futabas3003();
+        }
     }
 }
 

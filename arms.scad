@@ -104,10 +104,12 @@ module main_arm() {
 
 module spacer(length, width, thickness) {
 
+    SPACE = 0.3;
+
     difference() {
         union() {
             cube([ length, width, thickness ], center = true);
-            cube(size = [ length + thickness * 2, SPACER_LENGTH, ARM_THICKNESS ], center = true);
+            cube(size = [ length + thickness * 2, SPACER_LENGTH - SPACE, ARM_THICKNESS - SPACE ], center = true);
 
             translate([ 0, 0, thickness ]) {
                 cube(size = [ length, SPACER_LENGTH, ARM_THICKNESS ], center = true);
@@ -191,8 +193,8 @@ module mounted_arm() {
     }
 }
 
-/*
 
+/*
 include <servos.scad>
 include <bleuette.scad>;
 DEBUG = 1;
@@ -201,10 +203,13 @@ translate([-100, ARMS_SPACING + 8, 0]) {
     rotate([0, 0, -90]) {
         support();
 
-        color("GREY") translate([-9, -20.1, 13]) rotate([90, 0, 90]) futabas3003();
+        translate([SERVO_HOLDER_WIDTH - 27, -1, BODY_HEIGHT - SERVO_HOLDER_HEIGHT - 0.5])
+            rotate([90, 180, 90])
+                futabas3003();
     }
 }
 */
+
 
 if (DEMO) {
     rotate([ -90, 0, 0]) {
@@ -222,10 +227,21 @@ if (DEMO) {
         short_arm();
     }
 
-    translate([60, 60, 0]) {
-        rotate([0, 0, 90]) {
+    translate([60, 40, 0]) {
+        rotate([0, 0, 0]) {
             spacer(ARMS_SPACING, ARM_WIDTH, ARM_THICKNESS);
+
+            translate([0, 30, 0]) {
+                spacer(ARMS_SPACING + ARM_THICKNESS * 2, 15, ARM_THICKNESS);
+            }
         }
     }
 }
+
+
+//main_arm();
+//long_arm();
+//short_arm();
+//spacer(ARMS_SPACING, ARM_WIDTH, ARM_THICKNESS);
+//spacer(ARMS_SPACING + ARM_THICKNESS * 2, 15, ARM_THICKNESS);
 
