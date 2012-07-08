@@ -2,6 +2,7 @@
 $fn = 20;
 
 DEMO = true;
+DEMO_PIECE = false;
 
 SPACER_LENGTH = 6;
 
@@ -109,7 +110,10 @@ module spacer(length, width, thickness) {
     difference() {
         union() {
             cube([ length, width, thickness ], center = true);
-            cube(size = [ length + thickness * 2, SPACER_LENGTH - SPACE, ARM_THICKNESS - SPACE ], center = true);
+
+            translate([0, 0, - SPACE / 2]) {
+                cube(size = [ length + thickness * 2, SPACER_LENGTH - SPACE, ARM_THICKNESS - SPACE ], center = true);
+            }
 
             translate([ 0, 0, thickness ]) {
                 cube(size = [ length, SPACER_LENGTH, ARM_THICKNESS ], center = true);
@@ -215,7 +219,7 @@ if (DEMO) {
     rotate([ -90, 0, 0]) {
         mounted_arm();
     }
-} else {
+} else if (DEMO_PIECE) {
     main_arm();
 
     translate([30, 0, 0]) {

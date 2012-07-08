@@ -1,5 +1,5 @@
 
-include <servos.scad>
+//include <servos.scad>
 
 $fn = 25;
 
@@ -19,11 +19,19 @@ LEG_HOLE_DIAMETER = 2.5;
 CONNECTION_WIDTH = 8;
 
 SERVO_HOLDER_HEIGHT = 11.5;
-SERVO_HOLDER_WIDTH = 18;
+SERVO_HOLDER_WIDTH = 16;
 
-WASHER_DIAMETER = 18;
-WASHER_HEIGHT = 2;
+WASHER_DIAMETER = 0;//17.7;
+WASHER_HEIGHT = 1.1;
 
+EXTERNAL_WALL_THICKNESS = LEG_THICKNESS * 1.4;
+
+/**
+ *  Todo:
+ *  - Paroi externe plus épaisse
+ *  - Renforcer les parois externes avec des verticales
+ *  - Agrandir la fente des pattes pour limiter les frottements
+ */
 
 module servo_holder() {
 
@@ -95,7 +103,7 @@ module support() {
                 // Right leg holder
                 translate([BODY_WIDTH, 4, 0]) {
                     difference() {
-                        cube(size = [LEG_THICKNESS * 1.3, 19, BODY_HEIGHT]);
+                        cube(size = [LEG_THICKNESS * 1.4, 19, BODY_HEIGHT]);
 
                         translate([0, LEG_THICKNESS, -1])
                             cube(size = [LEG_THICKNESS, 100, BODY_HEIGHT - 2]);
