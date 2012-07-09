@@ -7,6 +7,8 @@ DEBUG = true;
 BODY_HEIGHT = 65.0;
 BODY_WIDTH = 27.5;
 
+MAIN_HOLE_DIAMETER = 6;
+
 SERVO_HOLE_DIAMETER = 0.5;
 SERVO_WIDTH = 24;
 SERVO_LENGTH = 53.5;
@@ -24,13 +26,12 @@ SERVO_HOLDER_WIDTH = 16;
 WASHER_DIAMETER = 0;//17.7;
 WASHER_HEIGHT = 1.1;
 
-EXTERNAL_WALL_THICKNESS = LEG_THICKNESS * 1.4;
+LEG_HOLDER_MIN_WALL_THICKNESS = 1;
+LEG_HOLDER_MAX_WALL_THICKNESS = 3;
 
 /**
  *  Todo:
- *  - Paroi externe plus épaisse
- *  - Renforcer les parois externes avec des verticales
- *  - Agrandir la fente des pattes pour limiter les frottements
+ *  - Agrandir la fente des pattes pour limiter les frottements ?
  */
 
 module servo_holder() {
@@ -63,6 +64,40 @@ module servo_holder() {
     }
 }
 
+module leg_holder(slot = false) {
+
+    max_thickness = LEG_HOLDER_MAX_WALL_THICKNESS - LEG_HOLDER_MIN_WALL_THICKNESS;
+
+    difference() {
+        //cube(size = [LEG_HOLDER_MIN_WALL_THICKNESS + LEG_THICKNESS, 19, BODY_HEIGHT]);
+
+        linear_extrude(height = BODY_HEIGHT) {
+            polygon([
+                [LEG_HOLDER_MIN_WALL_THICKNESS + LEG_THICKNESS, 19],
+                [LEG_HOLDER_MIN_WALL_THICKNESS + LEG_THICKNESS + max_thickness, 15 + LEG_HOLE_DIAMETER],
+                [LEG_HOLDER_MIN_WALL_THICKNESS + LEG_THICKNESS + max_thickness, 12 - LEG_HOLE_DIAMETER],
+                [LEG_HOLDER_MIN_WALL_THICKNESS + LEG_THICKNESS, 0],
+                [0, 0],
+                [0, 19]
+            ]);
+        }
+
+        translate([0, LEG_THICKNESS, -1]) {
+            cube(size = [LEG_THICKNESS, 100, BODY_HEIGHT - 2]);
+        }
+
+        if (slot) {
+            translate([0, LEG_THICKNESS - 5, BODY_HEIGHT / 2]) {
+                cube(size = [LEG_THICKNESS, 100, BODY_HEIGHT / 2 - 3]);
+            }
+        }
+    }
+
+    translate([0, 0, BODY_HEIGHT / 2 - 3])
+        cube(size = [LEG_THICKNESS, 19, 3]);
+
+}
+
 module support() {
 
     module support_servo_holder() {
@@ -82,12 +117,14 @@ module support() {
 
                     translate([13.75, 10, 0]) {
                         // Main hole
-                        cylinder(h = 65, r = 3);
-                       
+                        translate([0, 0, -1]) {
+                            cylinder(h = BODY_HEIGHT + 2, r = MAIN_HOLE_DIAMETER / 2);
+                        }
+
                         if (WASHER_DIAMETER) {
                             // Washer
                             cylinder(r = WASHER_DIAMETER / 2, h = WASHER_HEIGHT / 2, center = true);
-                            
+
                             translate([0, 0, BODY_HEIGHT])
                                 cylinder(r = WASHER_DIAMETER / 2, h = WASHER_HEIGHT / 2, center = true);
                         }
@@ -102,31 +139,14 @@ module support() {
 
                 // Right leg holder
                 translate([BODY_WIDTH, 4, 0]) {
-                    difference() {
-                        cube(size = [LEG_THICKNESS * 1.4, 19, BODY_HEIGHT]);
-
-                        translate([0, LEG_THICKNESS, -1])
-                            cube(size = [LEG_THICKNESS, 100, BODY_HEIGHT - 2]);
-
-                        translate([0, LEG_THICKNESS - 5, BODY_HEIGHT / 2])
-                            cube(size = [LEG_THICKNESS, 100, BODY_HEIGHT / 2 - 3]);
-                    }
-
-                    translate([0, 0, BODY_HEIGHT / 2 - 3])
-                        cube(size = [LEG_THICKNESS, 19, 3]);
+                    leg_holder(true);
                 }
 
                 // Left leg holder
-                translate([ - LEG_THICKNESS * 1.3, 4, 0]) {
-                    difference() {
-                        cube(size = [LEG_THICKNESS * 1.3, 19, BODY_HEIGHT]);
-
-                        translate([LEG_THICKNESS * 1.3 - LEG_THICKNESS, LEG_THICKNESS, -1])
-                            cube(size = [LEG_THICKNESS, 100, BODY_HEIGHT - 2]);
+                translate([ 0, 4, 0]) {
+                    mirror([1, 0, 0]) {
+                        leg_holder(false);
                     }
-
-                    translate([1, 0, BODY_HEIGHT / 2 - 3])
-                        cube(size = [LEG_THICKNESS, 19, 3]);
                 }
             }
 
@@ -179,7 +199,7 @@ if (1) {
         support();
 
         if (DEBUG) {
-            color("GREY") 
+            color("GREY")
                 translate([SERVO_HOLDER_WIDTH - 27, -1, BODY_HEIGHT - SERVO_HOLDER_HEIGHT - 0.5])
                     rotate([90, 180, 90])
                         futabas3003();
