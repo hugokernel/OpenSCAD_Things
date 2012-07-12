@@ -13,34 +13,53 @@ module cutter() {
 //linear_extrude(height = 10) {
 //}
 
-module paf(thickness) {
+module paf(length, count, thickness) {
+
     width = 20;
     height = 15;
     offset = 5;
+    
+    dent = length / width;
+    section = length / count;
+    echo(dent);
 
-    linear_extrude(height = thickness) {
-    for ( i = [0 : 5] ) {
-        translate([0, (width - offset) * i, 0]) {
-            if (i % 2) {
-                translate([height, 0, 1])
-                    rotate([0, 180, 0])
-                        % color("blue") polygon([[0, 0], [0, width], [height, width - offset], [height, offset]]);
-            } else {
-                translate([0, 0, 0]) {
-                    polygon([[0, 0], [0, width], [height, width - offset], [height, offset]]);
+    difference() { 
+        child(0);
+
+        union() {
+            translate([-500, -250, -25]) cube(size = [500, 500, 50]);
+            
+            translate([0, 0, -thickness/2])
+            linear_extrude(height = thickness) {
+                for ( i = [-length / 2 : dent] ) {
+                    translate([0, (width - offset) * i, 0]) {
+                        if (i % 2) {
+                            translate([height, 0, 0]) {
+                                rotate([0, 180, 0]) {
+                                    polygon([[0, 0], [0, width], [height, width - offset], [height, offset]]);
+                                }
+                            }
+                        } else {
+                            translate([0, 0, 0]) {
+                                %polygon([[0, 0], [0, width], [height, width - offset], [height, offset]]);
+                            }
+                        }
+                    }
                 }
             }
         }
-    }}
+    }
 }
 
+thickness = 15;
+
 translate([-50, 0, 0]) {
-    % color("blue") cube(size = [50, 100, 5]);
+    % color("blue") cube(size = [50, 100, thickness]);
 }
 
 translate([15, 0, 0]) {
-    cube(size = [50, 100, 5]);
+//    cube(size = [50, 100, thickness]);
 }
 
-paf(5);
+paf(100, 3, thickness) cube(size = [200, 200, 5], center = true);
 
