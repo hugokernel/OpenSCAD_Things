@@ -1,55 +1,71 @@
 
+use <body.scad>;
 
-
-module cutter() {
-
-    scale([1.5, 1, 1]) child(0);
-
-}
-
-//cutter() cube(size = [100, 300, 10], center = true);
-
-// Reduce size
-//linear_extrude(height = 10) {
-//}
-
-module teeth(width, length, thickness, offset = 1) {
-    translate([- length / 2, - width / 2, 0])
-    linear_extrude(height = thickness) {
-        polygon([[0, 0], [0, width], [length, width - offset], [length, offset]]);
+/**
+ *  Create one teeth
+ */
+module teeth(width, height, thickness) {
+    offset = width / 3;
+    translate([- width / 2, - height / 2, 0]) {
+        linear_extrude(height = thickness) {
+            polygon([[0, 0], [width, 0], [width - offset, height], [offset, height]]);
+        }
     }
 }
 
+/**
+ *  Zip length
+ *  - width of zip
+ *  - teeth count
+ *  - teeth height
+ *  - thickness
+ *  - clear
+ *  - recto
+ */
+module zip(width, count, teeth_height, teeth_thickness, clear = 0.1, this = true) {
 
-module zip(length, teeths) {
+    clear = - clear;
 
-    count = teeths[0];
-    echo("count:", count);
-    offset = 3;
-    space = 0;
+    /**
+     * 4 sections :
+     *
+     * |1/2         1/2|
+     * |--+ <- 3 -> +--|--+         +--
+     * |   \1  1  1/   |   \       /
+     * |    \_____/    |    \_____/
+     */
+    y = ((width - count * 2 * clear) / count) / 4;
+    teeth_width = y * 3;
 
+    // Always width / 3 (ref. teeth())
+    offset = teeth_width / 3;
+    start_at = clear + teeth_width / 2 - width / 2;
 
-    teeth_width = length / count;
+    translate([0, 0, - teeth_thickness / 2]) {
 
-    //for (i = [- length : teeth_width + offset : length - 1] ) {
-    x = - length / 2;
-    for (i = [0 : count] ) {
-echo(i);
-        if (i % 2) {
-            echo("HERE",i);
-            assign(x = x + (teeth_width - offset + space) * i) {
-                translate([0, x, 0]) {
-                    color("RED") teeth(teeth_width, teeths[1], teeths[1] * 2, offset);
+        // Debug purpose only
+        % union() {
+            translate([- width / 2, 0, - width / 2]) cube(size = [width, 0.01, width]);
+        }
+
+        for (i = [-1 : count * 2 - 1] ) {
+            if (i % 2) {
+                assign(x = start_at + y / 2 + (teeth_width - offset + clear) * i + 0.1) {
+                    translate([x, 0, 0]) {
+                        rotate([0, 0, 180]) {
+                            if (this == true) {
+                                color("BLUE") teeth(teeth_width - clear, teeth_height - clear, teeth_thickness);
+                            }
+                        }
+                    }
                 }
-            }
-        } else {
-            echo("LA",i);
-            assign(x = x + (teeth_width - offset + space) * i + 0.1) {
-                translate([0, x, 0]) {
-                    rotate([0, 0, 180])
-                    
-                    color("BLUE") teeth(teeth_width, teeths[1], teeths[1] * 2, offset);
-                    //% teeth(teeth_width, teeths[1], teeths[1] * 2, - offset);
+            } else {
+                assign(x = start_at + y / 2 + (teeth_width - offset + clear) * i) {
+                    translate([x, 0, 0]) {
+                        if (this == false) {
+                            color("RED") teeth(teeth_width - clear, teeth_height - clear, teeth_thickness);
+                        }
+                    }
                 }
             }
         }
@@ -59,100 +75,69 @@ echo(i);
 
 /**
  *  Cutter
- *  - dimension (length, width, thickness)
- *  - part_count
- *  - part_number
- *  - teeth (teeth count, height, offset)
+ *  - y position of cut
+ *  - dimension (width, length, thickness)
+ *  - teeths (count, height)
+ *  - dimension of exclude object
+ *  - which parts ?
  */
-module paf(dimension, part_count, part_number, teeth = [20, 15, 5]) {
-
-    width = dimension[0];
-    length = dimension[1];
-    height = dimension[2];
-
-    teeth_width = width / teeth[0];
-    teeth_height = teeth[1];
-    teeth_offset = teeth[2] / 2;
-
-    dent = length / teeth_width;
-    echo("Dent: ", dent, ", width: ", width);
-
-    thickness = height;
+module cutter(y, dimension, teeths, exclude_dimension, which = true) {
 
     difference() {
-    child(0);
-    union() {
-            translate([-499.9, -250, -25]) cube(size = [500, 500, 50]);
-    translate([0, 0, -thickness / 2 - 1])
-    for (i = [- width : teeth_width : width - 1] ) {
-        echo(i);
-        translate([0, i, 0]) {
-            if (i / 10 % 2) {
-                teeth(teeth_width, teeth_height, thickness * 2, 3);
-            }
-        }
-    }
-    }
-    }
+        child(0);
 
-/*
-    //difference() { 
-      //  child(0);
+        translate([0, y, 0]) {
+            zip(dimension[0], teeths[0], teeths[1], dimension[2], teeths[2], which);
 
-        union() {
-            translate([-500, -250, -25]) cube(size = [500, 500, 50]);
-            
-            translate([0, 0, - thickness / 2])
-            linear_extrude(height = thickness) {
-                //for ( i = [- length / 2 : dent] ) {
-                for ( i = [- width : teeth_width : width] ) {
-                    echo(i);
-                    //translate([0, (teeth_width - teeth_offset) * i, 0]) {
-                    translate([0, i, 0]) {
-                        if (i % 2) {
-                            translate([0, 0, 0]) {
-                                rotate([0, 180, 0]) {
-                                    polygon([[0, 0], [0, teeth_width], [teeth_height, teeth_width - teeth_offset], [teeth_height, teeth_offset]]);
-                                }
-                            }
-                        } else {
-                            translate([0, 0, 0]) {
-                                % polygon([[0, 0], [0, teeth_width], [teeth_height, teeth_width - teeth_offset], [teeth_height, teeth_offset]]);
-                            }
-                        }
-                    }
+            if (which) {
+                translate([- exclude_dimension[0] / 2, - (teeths[1]/ 2 - 0.1) - exclude_dimension[1], - exclude_dimension[2] / 2]) {
+                    cube(size = exclude_dimension);
+                }
+            } else {
+                translate([- exclude_dimension[0] / 2, teeths[1] / 2 - 0.1, , - exclude_dimension[2] / 2]) {
+                    cube(size = exclude_dimension);
                 }
             }
         }
-    //}
-*/
+    }
 }
 
-thickness = 15;
+//cube(size = [50, 50, 5], center = true);
+
+
+//zip(50, 5, 5, 5, 0.1, false);
+//teeth(20, 5, 3);
+
+CLEAR = 0.1;
+
+BODY_THICKNESS = 5;
+BODY_WIDTH = 100;
+BODY_LENGTH = 320;
 
 /*
-translate([-50, 0, 0]) {
-    % color("blue") cube(size = [50, 100, thickness]);
-}
+render() {
+    cutter(- BODY_LENGTH / (3 * 2), [BODY_WIDTH, BODY_LENGTH, BODY_THICKNESS], [3, 10, CLEAR], [300, 300, 10]) {
+        rotate([0, 0, 90]) body();
+    }
 
-translate([15, 0, 0]) {
-    cube(size = [50, 100, thickness]);
-}
+    cutter(- BODY_LENGTH / (3 * 2), [BODY_WIDTH, BODY_LENGTH, BODY_THICKNESS], [3, 10, CLEAR], [300, 300, 10], false) {
+        rotate([0, 0, 90]) body();
+    }
+};
 */
 
-//translate([0, -50, 0]) cylinder(r = 4, h = 100);
-
-//cube(size = [50, 100, 5], center = true);
-
-//teeth(8, 5, 3);
+module part1() {
+    cutter(BODY_LENGTH / (3 * 2), [BODY_WIDTH, BODY_LENGTH, BODY_THICKNESS], [3, 10, CLEAR], [300, 300, 10]) {
+        rotate([0, 0, 90]) body();
+    }
 
 /*
-paf([50, 100, 5], 3, 1, [5, 8, 4]) {
-    cube(size = [50, 100, 5], center = true);
+    cutter(BODY_LENGTH / (3 * 2), [BODY_WIDTH, BODY_LENGTH, BODY_THICKNESS], [3, 10, CLEAR], [300, 300, 10], false) {
+        rotate([0, 0, 90]) body();
+    }
+    */
 }
-*/
 
-//color("RED") teeth(5, 8, 4);
-zip(50, [5, 8, 4]);
-
-
+render() {
+    part1();
+};
