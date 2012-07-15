@@ -1,7 +1,7 @@
 
 use <ultimalker_headmount_female.scad>;
 
-DEBUG = false;
+DEBUG = true;
 
 $fn = 20;
 
@@ -106,9 +106,9 @@ if (DEBUG) {
     //support_armed();
 
     rotate([0, 90, 0]) {
-        headmount_armed();
+    //    headmount_armed();
     }
 
-    //arm(10, 15, 6);
+    arm(10, 25, 3, false);
 }
 
