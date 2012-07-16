@@ -38,6 +38,7 @@ holesTubeRadius = 5;
 
 // Modif hugo
 washerDiameter = 12;
+washerHeight = 1;
 supportLength = 18.5;
 supportWidth = 10;
 
@@ -93,31 +94,47 @@ module baseAndRiser(){
             base();
             riserTube();
         }
-            translate(tubeCentre) passThroughTube();
+        
+        translate(tubeCentre)
+            passThroughTube();
+
+        // Washer
+        translate ([outsideHolesFromCentre,outsideHolesFromCentre, baseHeight - washerHeight])
+            cylinder(r = washerDiameter / 2, h = washerHeight);
+        translate ([outsideHolesFromCentre,-outsideHolesFromCentre, baseHeight - washerHeight])
+            cylinder(r = washerDiameter / 2, h = washerHeight + 1);
+        translate ([-outsideHolesFromCentre,-outsideHolesFromCentre, baseHeight - washerHeight])
+            cylinder(r = washerDiameter / 2, h = washerHeight);
+
+        translate ([-outsideHolesFromCentre,outsideHolesFromCentre,2])
+            cylinder(r = washerDiameter / 2, h = baseHeight);
+
+        translate([-2, 2, 10]) {
+            rotate([0, 0, -45]) {
+                support();
+            }
+        }
     }
 }
 
 module support() {
 
-    rotate([0, 0, -45])
-    translate([- supportWidth / 2, - supportLength / 2, 1]) {
-        translate([0, 0, baseHeight])
-            cube(size = [supportWidth, supportLength, 10]);
+    translate([0, 0, baseHeight])
+        cube(size = [supportWidth, supportLength, 10], center = true);
 
-        translate([0, 0, -baseHeight]) {
+    translate([- supportWidth / 2, - supportLength / 2, -baseHeight * 2]) {
+        cylinder(r = 1.4, h = 50);   
+
+        translate([supportWidth, supportLength, 0]) {
             cylinder(r = 1.4, h = 50);   
-
-            translate([supportWidth, supportLength, 0]) {
-                cylinder(r = 1.4, h = 50);   
-            }
         }
+    }
 
-        translate([0, 0, -2]) {
+    translate([- supportWidth / 2, - supportLength / 2, -11]) {
+        cylinder(r = 3, h = 3);   
+
+        translate([supportWidth, supportLength, 0]) {
             cylinder(r = 3, h = 3);   
-
-            translate([supportWidth, supportLength, 0]) {
-                cylinder(r = 3, h = 3);   
-            }
         }
     }
 }
@@ -170,12 +187,6 @@ module base(){
 
         translate([-insideHolesFromCentre, insideHolesFromCentre, -stlClearance])
                 cylinder(r = holesTubeRadius, h = tubeBottom + stlClearance);
-
-
-        translate ([-outsideHolesFromCentre,outsideHolesFromCentre,2])
-            cylinder(r = washerDiameter / 2, h = baseHeight);
-
-        support();
     }
 }
 
