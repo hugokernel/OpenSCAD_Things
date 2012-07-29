@@ -10,6 +10,7 @@ ARM_THICKNESS = 2;
 
 module adapter() {
     // Make female connector
+    translate([0, -2, 0]) {
     % difference() {
         cube(size = [CUBE_WIDTH, CUBE_LENGTH + CUBE_THICKNESS * 2, CUBE_HEIGHT + CUBE_THICKNESS], center = true);
 
@@ -18,17 +19,17 @@ module adapter() {
         }
     }
 
-    // Female adaptor
-    union() {
-        translate([0, 0, 7])
-            cube(size = [CUBE_WIDTH, CUBE_LENGTH + 5, 4], center = true);
+        union() {
+            translate([0, 0, 7])
+                cube(size = [CUBE_WIDTH, CUBE_LENGTH + 5, 4], center = true);
 
-        translate([0, - CUBE_LENGTH + 6, -5])
-            cube(size = [CUBE_WIDTH, 2, 23], center = true);
+            translate([0, - CUBE_LENGTH + 6, -5])
+                cube(size = [CUBE_WIDTH, 2, 23], center = true);
+        }
     }
 
     // Make arm
-    translate([0, CUBE_WIDTH / 2 + CUBE_THICKNESS / 2 + 0.5, 5]) {
+    translate([0, CUBE_WIDTH / 2 + CUBE_THICKNESS / 2 - 1.5, 5]) {
         color("RED")
             cube(size = [CUBE_WIDTH, ARM_THICKNESS * 2, 100], center = true);
     }
@@ -42,11 +43,12 @@ module adapter() {
         color("GREY") cube(size = [CUBE_WIDTH, CUBE_LENGTH, CUBE_HEIGHT], center = true);
     }
 
-    translate([- CUBE_LENGTH / 2 + 0.5, 0, 2.5])
+    translate([- CUBE_LENGTH / 2 + 0.5, -2, 2.5])
         color("BLUE") cube(size = [2, CUBE_LENGTH + 2, 5], center = true);
 }
 
-//rotate([0, -90, 0])
+rotate([0, -90, 0])
+mirror([0, 0, 90])
     adapter();
 
 
