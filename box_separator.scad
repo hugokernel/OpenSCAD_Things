@@ -39,16 +39,18 @@ difference() {
 }
 */
 
-LENGTH_TOP = 50;
-LENGTH_BOTTOM = 49;
+LENGTH_TOP = 50.5;
+LENGTH_BOTTOM = 49.5;
 HEIGHT = 31;
-THICKNESS = .2;
+THICKNESS = 0.2;
 BORDER_WIDTH = 2;
 BORDER_THICKNESS = 1.5;
 
 module separator() {
 
-    module base() {
+    difference() {
+        union() {
+            // Create exterior
             linear_extrude(height = BORDER_THICKNESS) {
                 polygon([
                     [- LENGTH_TOP / 2, HEIGHT], [LENGTH_TOP / 2, HEIGHT],
@@ -56,12 +58,8 @@ module separator() {
                     [- LENGTH_BOTTOM / 2 + RADIUS, 0], [- LENGTH_BOTTOM / 2, RADIUS]
                 ]);
             }
-    }
 
-    difference() {
-        union() {
-            base();
-
+            // Rounded corner
             translate([- LENGTH_BOTTOM / 2 + RADIUS, RADIUS, 0]) {
                 cylinder(r = RADIUS, h = BORDER_THICKNESS);
             }
@@ -71,22 +69,18 @@ module separator() {
             }
         }
 
+        // Create border
         translate([0, 0, THICKNESS]) {
             linear_extrude(height = BORDER_THICKNESS) {
                 polygon([
-                    [- LENGTH_TOP / 2 + BORDER_WIDTH, HEIGHT],
-                    [LENGTH_TOP / 2 - BORDER_WIDTH, HEIGHT],
+                    [- LENGTH_TOP / 2 + BORDER_WIDTH, HEIGHT - BORDER_WIDTH],
+                    [LENGTH_TOP / 2 - BORDER_WIDTH, HEIGHT - BORDER_WIDTH],
                     [LENGTH_BOTTOM / 2 - BORDER_WIDTH, BORDER_WIDTH],
                     [- LENGTH_BOTTOM / 2 + BORDER_WIDTH, BORDER_WIDTH]
                 ]);
             }
         }
-
-        translate([0, HEIGHT / 2, THICKNESS]) {
-            rbox(HEIGHT / 1.5, LENGTH_TOP / 1.5, 1, RADIUS);
-        }
     }
 }
 
 separator();
-
