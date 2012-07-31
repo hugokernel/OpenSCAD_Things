@@ -1,46 +1,10 @@
 
 $fn = 15;
 
-LENGTH = 50.5;
-HEIGHT = 31;
-THICKNESS = 1.5;
-RADIUS = 2.78;
+RADIUS = 1.5;
 
-module rbox(width, length, thickness, radius) {
-
-    cube(size = [length - radius * 2, width, thickness], center = true);
-    cube(size = [length, width - radius * 2, thickness], center = true);
-
-    // Rounded corner
-    translate([ length / 2 - radius, width / 2 - radius, - thickness / 2 ]) {
-        cylinder(r = radius, h = thickness);
-    }
-
-    translate([ length / 2 - radius, - (width / 2 - radius), - thickness / 2 ]) {
-        cylinder(r = radius, h = thickness);
-    }
-
-    translate([ - (length / 2 - radius), width / 2 - radius, - thickness / 2 ]) {
-        cylinder(r = radius, h = thickness);
-    }
-
-    translate([ -(length / 2 - radius), - (width / 2 - radius), - thickness / 2 ]) {
-        cylinder(r = radius, h = thickness);
-    }
-}
-
-/*
-difference() {
-    rbox(LENGTH, HEIGHT, THICKNESS, RADIUS);
-
-    translate([5, 0, THICKNESS / 1.2]) {
-        rbox(LENGTH - 5, HEIGHT - 15, THICKNESS, RADIUS);
-    }
-}
-*/
-
-LENGTH_TOP = 50.5;
-LENGTH_BOTTOM = 49.5;
+LENGTH_TOP = 50.85;
+LENGTH_BOTTOM = 49.9;
 HEIGHT = 31;
 THICKNESS = 0.2;
 BORDER_WIDTH = 2;
