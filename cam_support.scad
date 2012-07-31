@@ -1,5 +1,5 @@
 
-use <ultimalker_headmount_female.scad>;
+use <ultimaker_headmount_female.scad>;
 
 DEBUG = true;
 
@@ -14,7 +14,7 @@ module cam_support() {
 
     difference() {
         cube(size = [width + wall_thickness, length + wall_thickness, height + wall_thickness]);
-        
+
         translate([-4, wall_thickness / 2, wall_thickness / 2]) {
             cube(size = [width + 5, length, height]);
         }
