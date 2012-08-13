@@ -1,4 +1,4 @@
-$fn = 30;
+$fn = 40;
 
 HOLDER_THICKNESS = 1;
 SCREW_DIAMETER = 1;
@@ -11,7 +11,7 @@ ARM_COUNT = 1;
  *  http://www.servocity.com/html/futaba_servo_splines.html
  *  external diameter, tooth count, tooth height, tooth length, tooth width, thickness
  */
-FUTABA_3F_SPLINE = [5.92, 25, 0.5, 0.6, 0.02, 4];
+FUTABA_3F_SPLINE = [5.92, 25, 0.2, 0.55, 0.1, 4];
 
 /**
  *  Tooth
@@ -132,7 +132,11 @@ module servo_arm(params, arms) {
     }
 }
 
-//rotate([0, 180, 0])
-    servo_arm(FUTABA_3F_SPLINE, [20, 1]);
+rotate([0, 180, 0])
+//intersection() {
+//    cylinder(r = 5, h = 10);
+    servo_arm(FUTABA_3F_SPLINE, [20, 4]);
+//}
 
 //tooth();
+
