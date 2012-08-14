@@ -58,7 +58,8 @@ module servo_head(params) {
 
 /**
  *  Servo hold
- *  Head / Tooth parameters
+ *  - Head / Tooth parameters
+ *  - Arms params (length and count)
  */
 module servo_arm(params, arms) {
 
