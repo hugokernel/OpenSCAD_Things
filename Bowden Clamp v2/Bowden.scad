@@ -94,7 +94,7 @@ module baseAndRiser(){
             base();
             riserTube();
         }
-        
+
         translate(tubeCentre)
             passThroughTube();
 
@@ -109,11 +109,18 @@ module baseAndRiser(){
         translate ([-outsideHolesFromCentre,outsideHolesFromCentre,2])
             cylinder(r = washerDiameter / 2, h = baseHeight);
 
-        translate([-2, 2, 10]) {
+        translate([-10, 9, 10]) {
             rotate([0, 0, -45]) {
                 support();
             }
         }
+
+        // New hole, v2 hot end
+        translate([0, - baseWidth / 2 + 18, -stlClearance])
+            cylinder(r = 4, h = baseHeight + washerHeight);
+
+        translate([-15, - baseWidth / 2 + 18, (baseHeight + washerHeight) / 2 - 0.5])
+            cube(size = [30, 2, baseHeight + washerHeight], center = true);
     }
 }
 
@@ -123,18 +130,18 @@ module support() {
         cube(size = [supportWidth, supportLength, 10], center = true);
 
     translate([- supportWidth / 2, - supportLength / 2, -baseHeight * 2]) {
-        cylinder(r = 1.4, h = 50);   
+        cylinder(r = 1.4, h = 50);
 
         translate([supportWidth, supportLength, 0]) {
-            cylinder(r = 1.4, h = 50);   
+            cylinder(r = 1.4, h = 50);
         }
     }
 
     translate([- supportWidth / 2, - supportLength / 2, -11]) {
-        cylinder(r = 3, h = 3);   
+        cylinder(r = 3, h = 3);
 
         translate([supportWidth, supportLength, 0]) {
-            cylinder(r = 3, h = 3);   
+            cylinder(r = 3, h = 3);
         }
     }
 }
@@ -154,8 +161,6 @@ module base(){
                 roundedBox([baseWidth - baseCornerRadius * 2, baseLegWidth, baseHeight],baseCornerRadius,true);
             translate ([baseWidth / 2 - baseLegWidth / 2, 0, baseHeight / 2])
                 roundedBox([baseLegWidth, baseWidth, baseHeight],baseCornerRadius,true);
-
-
 
             // Washer
             translate ([outsideHolesFromCentre,outsideHolesFromCentre, 0])
@@ -178,15 +183,13 @@ module base(){
         translate ([-outsideHolesFromCentre,outsideHolesFromCentre,-1])
             cylinder(r = outsideHolesRadius + oHR_Allow, h = baseHeight * 2);
 
-        
-        translate([insideHolesFromCentre, insideHolesFromCentre, -stlClearance])
-                cylinder(r = holesTubeRadius, h = tubeBottom + stlClearance);
 
-        translate([-insideHolesFromCentre, -insideHolesFromCentre, -stlClearance])
-                cylinder(r = holesTubeRadius, h = tubeBottom + stlClearance);
-
-        translate([-insideHolesFromCentre, insideHolesFromCentre, -stlClearance])
-                cylinder(r = holesTubeRadius, h = tubeBottom + stlClearance);
+        %translate([-insideHolesFromCentre, -insideHolesFromCentre, -stlClearance])
+            cylinder(r = holesTubeRadius, h = tubeBottom + stlClearance);
+        %translate([insideHolesFromCentre, insideHolesFromCentre, -stlClearance])
+            cylinder(r = holesTubeRadius, h = tubeBottom + stlClearance);
+        %translate([-insideHolesFromCentre, insideHolesFromCentre, -stlClearance])
+            cylinder(r = holesTubeRadius, h = tubeBottom + stlClearance);
     }
 }
 
@@ -253,7 +256,7 @@ module Makerbolt() {
     * The other parameters, common to bolt and nut, are defined into k_cyl() module
     */
     b_hg=0; //distance of knurled head
-    
+
     /* Screw thread parameters
     */
     t_od=riserTubeRadius * 2; // Thread outer diameter
@@ -263,8 +266,8 @@ module Makerbolt() {
     t_rs=PI/2; // Resolution
     t_se=1; // Thread ends style
     t_gp=0; // Gap between nut and bolt threads
-    
-    
+
+
     translate([0,0,b_hg])screw_thread(t_od+t_gp, t_st, t_lf, t_ln, t_rs, t_se);
 }
 
