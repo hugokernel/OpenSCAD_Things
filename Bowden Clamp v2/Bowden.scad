@@ -103,8 +103,8 @@ module baseAndRiser(){
             cylinder(r = washerDiameter / 2, h = washerHeight);
         translate ([outsideHolesFromCentre,-outsideHolesFromCentre, baseHeight - washerHeight])
             cylinder(r = washerDiameter / 2, h = washerHeight + 1);
-        translate ([-outsideHolesFromCentre,-outsideHolesFromCentre, baseHeight - washerHeight])
-            cylinder(r = washerDiameter / 2, h = washerHeight);
+        translate ([-outsideHolesFromCentre,-outsideHolesFromCentre, 2])
+            cylinder(r = washerDiameter / 2, h = baseHeight);
 
         translate ([-outsideHolesFromCentre,outsideHolesFromCentre,2])
             cylinder(r = washerDiameter / 2, h = baseHeight);
