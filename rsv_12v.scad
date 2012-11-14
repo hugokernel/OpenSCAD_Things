@@ -4,7 +4,7 @@ $fn = 40;
 use <MCAD/boxes.scad>;
 
 module plate() {
-    DIAMETER = 30;
+    DIAMETER = 28.75;
     HEIGHT = 7;
 
     difference() {
