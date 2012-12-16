@@ -1,5 +1,12 @@
 use <teardrops.scad>
 use <roundCornersCube.scad>
+use <../../MCAD/boxes.scad>
+
+$fn = 40;
+
+BOX_WIDTH = 75;
+BOX_LENGTH = 110;
+BOX_WALL_THICKNESS = 1.5;
 
 module polyhole(h, d) 
 {
@@ -20,11 +27,11 @@ module standoff(outer_diam, inner_diam, height, hole_depth) {
 module rounded_cube_case (generate_box = true, generate_lid = false) 
 {
 	//Case details (these are *outer* diameters of the case 
-	sx = 110; 			//X dimension
-	sy = 75;			//Y dimension
+	sx = BOX_LENGTH; 			//X dimension
+	sy = BOX_WIDTH;			//Y dimension
 	sz = 20;				//Z dimension
 	r = 2.5;				//The radius of the curves of the box walls.
-	wall_thickness = 1.5;//Thickness of the walls of the box (and lid)
+	wall_thickness = BOX_WALL_THICKNESS;//Thickness of the walls of the box (and lid)
 
 	//Screw hole details
 	screw_hole_dia = 2;  	//Diameter of the screws you want to use
@@ -83,29 +90,44 @@ module rounded_cube_case (generate_box = true, generate_lid = false)
 
 }
 
-//rounded_cube_case(false, true);
-rounded_cube_case(true, false);
+module support_screw() {
+    radius = 3.5;
+    height = 2;
+    difference() {
+        cylinder(r = radius, h = height);
+        cylinder(r = 0.7, h = 20, $fn = 4);
+    }
+}
 
 module support() {
 
-    radius = 2.5;
-
-    translate([0, 0, 0]) {
-        cylinder(r = radius, h = 10);
+    translate([0, 0, WALL_THICKNESS]) {
+        support_screw();
     }
 
-    translate([90.2, 0, 0]) {
-        cylinder(r = radius, h = 10);
+    translate([90.2, 0, WALL_THICKNESS]) {
+        support_screw();
     }
 
-    translate([0, 52.07, 0]) {
-        cylinder(r = radius, h = 10);
+    translate([0, 52.07, WALL_THICKNESS]) {
+        support_screw();
     }
 
-    translate([90.2, 52.07, 0]) {
-        cylinder(r = radius, h = 10);
+    translate([90.2, 52.07, WALL_THICKNESS]) {
+        support_screw();
     }
+}
 
+module holes() {
+    translate([0, BOX_WIDTH / 2, 35]) {
+        roundedBox([25, BOX_WIDTH - 20, 50], 5);
+    }
+}
+
+
+difference() {
+    rounded_cube_case(true, false);
+    holes();
 }
 
 translate([10, 12, 0]) {
@@ -114,5 +136,5 @@ translate([10, 12, 0]) {
 
 translate([5, 6, 5]) {
     color("red")
-    cube([100.3, 62.3, 1]);
+    //cube([100.3, 62.3, 1]);
 }

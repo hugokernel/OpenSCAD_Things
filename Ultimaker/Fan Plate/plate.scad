@@ -29,7 +29,7 @@ module fix() {
 }
 
 module fan() {
-    roundedBox([FAN_WIDTH, FAN_WIDTH, FAN_THICKNESS], 7, true);
+    roundedBox([FAN_WIDTH, FAN_WIDTH, FAN_THICKNESS], 3, true);
 
     translate([0, 0, -20]) {
         cylinder(r = FAN_DIAMETER / 2, h = 20);
@@ -60,11 +60,11 @@ module support() {
             roundedBox([SUPPORT_WIDTH, SUPPORT_LENGTH, SUPPORT_THICKNESS], 7, true);
         
             translate([0, 40, SUPPORT_THICKNESS / 2]) {
-                roundedBox([FAN_WIDTH + 4, FAN_WIDTH + 4, 6], 7, true);
+                roundedBox([FAN_WIDTH + 4, FAN_WIDTH + 4, 6], 3, true);
             }
 
             translate([0, -40, SUPPORT_THICKNESS / 2]) {
-                roundedBox([FAN_WIDTH + 4, FAN_WIDTH + 4, 6], 7, true);
+                roundedBox([FAN_WIDTH + 4, FAN_WIDTH + 4, 6], 3, true);
             }
         }
 
