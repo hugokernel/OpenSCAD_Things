@@ -4,9 +4,10 @@ use <../../MCAD/boxes.scad>
 
 $fn = 40;
 
-BOX_WIDTH = 75;
-BOX_LENGTH = 110;
-BOX_WALL_THICKNESS = 1.5;
+BOX_WIDTH = 76;
+BOX_LENGTH = 112;
+BOX_HEIGHT = 32;
+BOX_WALL_THICKNESS = 1.8;
 
 module polyhole(h, d) 
 {
@@ -29,7 +30,7 @@ module rounded_cube_case (generate_box = true, generate_lid = false)
 	//Case details (these are *outer* diameters of the case 
 	sx = BOX_LENGTH; 			//X dimension
 	sy = BOX_WIDTH;			//Y dimension
-	sz = 20;				//Z dimension
+	sz = BOX_HEIGHT;				//Z dimension
 	r = 2.5;				//The radius of the curves of the box walls.
 	wall_thickness = BOX_WALL_THICKNESS;//Thickness of the walls of the box (and lid)
 
@@ -82,7 +83,7 @@ module rounded_cube_case (generate_box = true, generate_lid = false)
 			for (i = screw_hole_centres)  
 			{
 				translate([0,0,wall_thickness]) translate(i) 
-					standoff(screw_hole_dia * 3, screw_hole_dia, sz - (wall_thickness * 2), 
+					standoff(screw_hole_dia * 3, screw_hole_dia, sz - (wall_thickness * 2) - 2, 
 						screw_hole_depth);
 			}
 		}
@@ -95,38 +96,42 @@ module support_screw() {
     height = 2;
     difference() {
         cylinder(r = radius, h = height);
-        cylinder(r = 0.7, h = 20, $fn = 4);
+        cylinder(r = 1.5, h = 20);
     }
 }
 
 module support() {
 
-    translate([0, 0, WALL_THICKNESS]) {
+    translate([0, 0, BOX_WALL_THICKNESS]) {
         support_screw();
     }
 
-    translate([90.2, 0, WALL_THICKNESS]) {
+    translate([90.2, 0, BOX_WALL_THICKNESS]) {
         support_screw();
     }
 
-    translate([0, 52.07, WALL_THICKNESS]) {
+    translate([0, 52.07, BOX_WALL_THICKNESS]) {
         support_screw();
     }
 
-    translate([90.2, 52.07, WALL_THICKNESS]) {
+    translate([90.2, 52.07, BOX_WALL_THICKNESS]) {
         support_screw();
     }
 }
 
 module holes() {
-    translate([0, BOX_WIDTH / 2, 35]) {
+    translate([0, BOX_WIDTH / 2, BOX_HEIGHT * 2 - 15]) {
         roundedBox([25, BOX_WIDTH - 20, 50], 5);
+    }
+
+    translate([BOX_LENGTH / 2, BOX_WIDTH, BOX_HEIGHT * 2 - 15]) {
+        roundedBox([BOX_WIDTH - 20, 20, 50], 5);
     }
 }
 
 
 difference() {
-    rounded_cube_case(true, false);
+    rounded_cube_case(true, true);
     holes();
 }
 
@@ -136,5 +141,5 @@ translate([10, 12, 0]) {
 
 translate([5, 6, 5]) {
     color("red")
-    //cube([100.3, 62.3, 1]);
+        //cube([100.3, 62.3, 25]);
 }
