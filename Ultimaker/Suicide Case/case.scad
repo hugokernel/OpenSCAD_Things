@@ -91,31 +91,32 @@ module rounded_cube_case (generate_box = true, generate_lid = false)
 
 }
 
-module support_screw() {
+module support_screw(boolean = false) {
     radius = 3.5;
     height = 2;
-    difference() {
-        cylinder(r = radius, h = height);
-        cylinder(r = 1.5, h = 20);
+
+    if (boolean) {
+        translate([0, 0, -10]) {
+            cylinder(r = 1.5, h = 20);
+        }
+    } else {
+        difference() {
+            cylinder(r = radius, h = height);
+            cylinder(r = 1.5, h = 20);
+        }
     }
 }
 
-module support() {
-
-    translate([0, 0, BOX_WALL_THICKNESS]) {
-        support_screw();
-    }
-
-    translate([90.2, 0, BOX_WALL_THICKNESS]) {
-        support_screw();
-    }
-
-    translate([0, 52.07, BOX_WALL_THICKNESS]) {
-        support_screw();
-    }
-
-    translate([90.2, 52.07, BOX_WALL_THICKNESS]) {
-        support_screw();
+module support(boolean = false) {
+    for (position = [
+        [0,     0,      BOX_WALL_THICKNESS],
+        [90.2,  0,      BOX_WALL_THICKNESS],
+        [0,     52.07,  BOX_WALL_THICKNESS],
+        [90.2,  52.07,  BOX_WALL_THICKNESS]
+    ]) {
+        translate(position) {
+            support_screw(boolean);
+        }
     }
 }
 
@@ -129,17 +130,25 @@ module holes() {
     }
 }
 
+module case() {
+    difference() {
+        rounded_cube_case(true, true);
+        holes();
+   
+        translate([10, 12, 0]) {
+            support(true);
+        }
+    }
 
-difference() {
-    rounded_cube_case(true, true);
-    holes();
-}
-
-translate([10, 12, 0]) {
-    support();
+    translate([10, 12, 0]) {
+        support();
+    }
 }
 
 translate([5, 6, 5]) {
-    color("red")
-        //cube([100.3, 62.3, 25]);
+    //color("red")
+      //  cube([100.3, 62.3, 25]);
 }
+
+case();
+
