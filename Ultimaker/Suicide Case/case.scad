@@ -25,7 +25,7 @@ module standoff(outer_diam, inner_diam, height, hole_depth) {
 	}
 }
 
-module rounded_cube_case (generate_box = true, generate_lid = false) 
+module rounded_cube_case(generate_box = true, generate_lid = false) 
 {
 	//Case details (these are *outer* diameters of the case 
 	sx = BOX_LENGTH; 			//X dimension
@@ -130,6 +130,20 @@ module holes() {
     }
 }
 
+module mouse_ears() {
+
+    for (position = [
+        [BOX_LENGTH, BOX_WIDTH, 0],
+        [0, BOX_WIDTH, 0],
+        [BOX_LENGTH, 0, 0],
+        [0, 0, 0]
+    ]) {
+        translate(position) {
+            cylinder(r = 10, h = 0.6);
+        }
+    }
+}
+
 module case() {
     difference() {
         rounded_cube_case(true, true);
@@ -143,11 +157,12 @@ module case() {
     translate([10, 12, 0]) {
         support();
     }
+
+    mouse_ears();
 }
 
 translate([5, 6, 5]) {
-    //color("red")
-      //  cube([100.3, 62.3, 25]);
+    color("red") cube([100.3, 62.3, 25]);
 }
 
 case();
