@@ -252,7 +252,7 @@ translate([0, 0, SUPPORT_THICKNESS+1]) {
 
 translate([0, -50, 7.5]) {
     rotate([-6, 0, 0]) {
-        roundedBox([FAN_WIDTH, FAN_WIDTH, 2], FAN_CORNER_DIAMETER, true);
+        %roundedBox([FAN_WIDTH, FAN_WIDTH, 2], FAN_CORNER_DIAMETER, true);
     }
 }
 
