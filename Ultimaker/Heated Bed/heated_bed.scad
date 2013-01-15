@@ -22,7 +22,7 @@ module plate() {
     }
 
     module holes_heater() {
-        width_space = 180;
+        width_space = 209;
         length_space = width_space;
         depth = 6;
         radius = 1.4;
