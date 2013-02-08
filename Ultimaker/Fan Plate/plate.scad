@@ -15,7 +15,7 @@ SUPPORT_WIDTH = 86;
 SUPPORT_LENGTH = 180;
 SUPPORT_THICKNESS = 5.5;
 
-use <MCAD/boxes.scad>;
+use <../../MCAD/boxes.scad>;
 
 module fix() {
     cylinder(r = 3.5, h = SUPPORT_THICKNESS * 2);
@@ -128,7 +128,7 @@ module leg(male = false) {
     thickness = SUPPORT_THICKNESS + 1;
 
     connector_radius = 2;
-    clearance = 0.2;
+    clearance = 0.1;
 
     RADIUS = 2;
 
@@ -219,15 +219,15 @@ module fan_support() {
 }
 
 
-support();
+%support();
 
 translate([0, 0, SUPPORT_THICKNESS+1]) {
-    fan_support();
+    %fan_support();
 }
 
 translate([0, -50, 7.5]) {
     rotate([-6, 0, 0]) {
-        roundedBox([FAN_WIDTH, FAN_WIDTH, 2], FAN_CORNER_DIAMETER, true);
+roundedBox([FAN_WIDTH, FAN_WIDTH, 2], FAN_CORNER_DIAMETER, true);
     }
 }
 

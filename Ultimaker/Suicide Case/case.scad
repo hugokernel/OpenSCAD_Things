@@ -146,11 +146,11 @@ module mouse_ears() {
 
 module case() {
     difference() {
-        rounded_cube_case(true, true);
-        holes();
+        rounded_cube_case(false, true);
+        //holes();
    
         translate([10, 12, 0]) {
-            support(true);
+            //support(true);
         }
     }
 
@@ -158,11 +158,11 @@ module case() {
         support();
     }
 
-    mouse_ears();
+    //mouse_ears();
 }
 
 translate([5, 6, 5]) {
-    color("red") cube([100.3, 62.3, 25]);
+    //color("red") cube([100.3, 62.3, 25]);
 }
 
 case();
