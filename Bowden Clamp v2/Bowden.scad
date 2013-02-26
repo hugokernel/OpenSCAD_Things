@@ -63,11 +63,11 @@ tubeCentre = [insideHolesFromCentre,-insideHolesFromCentre, -stlClearance];
 //*****************************************************************************
 //******************* PRINTING ****************************************************
 
-baseAndRiser();
+//baseAndRiser();
 
 //tighteningCone();
 
-//cap();
+cap();
 
 //capTest(); // Makes a 4mm High Cap with no top to test thread for fit on riser. Uses capInsideDiameter same as cap
 
