@@ -158,11 +158,11 @@ module case() {
         support();
     }
 
-    mouse_ears();
+    %mouse_ears();
 }
 
 translate([5, 6, 5]) {
-    color("red") cube([100.3, 62.3, 25]);
+    %color("red") cube([100.3, 62.3, 25]);
 }
 
 case();
