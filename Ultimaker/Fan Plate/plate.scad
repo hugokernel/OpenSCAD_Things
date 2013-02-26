@@ -170,25 +170,50 @@ module leg(male = false) {
 }
 
 module legs(male = false) {
-    translate([SUPPORT_WIDTH / 2 - 6.5, - SUPPORT_LENGTH / 2 + 45, 0]) {
+    translate([SUPPORT_WIDTH / 2 - 6.5, - SUPPORT_LENGTH / 2 + 35, 0]) {
         rotate([0, 0, -90]) {
             leg(male);
         }
     }
 
-    translate([- SUPPORT_WIDTH / 2 + 6.5, - SUPPORT_LENGTH / 2 + 45, 0]) {
+    translate([SUPPORT_WIDTH / 2 - 6.5, - SUPPORT_LENGTH / 2 + 85, 0]) {
+        rotate([0, 0, -90]) {
+            leg(male);
+        }
+    }
+
+    translate([SUPPORT_WIDTH / 2 - 6.5, SUPPORT_LENGTH / 2 - 65, 0]) {
+        rotate([0, 0, -90]) {
+            leg(male);
+        }
+    }
+
+    translate([SUPPORT_WIDTH / 2 - 6.5, SUPPORT_LENGTH / 2 - 30, 0]) {
+        rotate([0, 0, -90]) {
+            leg(male);
+        }
+    }
+
+
+    translate([- SUPPORT_WIDTH / 2 + 6.5, - SUPPORT_LENGTH / 2 + 35, 0]) {
         rotate([0, 0, 90]) {
             leg(male);
         }
     }
 
-    translate([SUPPORT_WIDTH / 2 - 6.5, SUPPORT_LENGTH / 2 - 45, 0]) {
-        rotate([0, 0, -90]) {
+    translate([- SUPPORT_WIDTH / 2 + 6.5, - SUPPORT_LENGTH / 2 + 85, 0]) {
+        rotate([0, 0, 90]) {
             leg(male);
         }
     }
 
-    translate([- SUPPORT_WIDTH / 2 + 6.5, SUPPORT_LENGTH / 2 - 45, 0]) {
+    translate([- SUPPORT_WIDTH / 2 + 6.5, SUPPORT_LENGTH / 2 - 65, 0]) {
+        rotate([0, 0, 90]) {
+            leg(male);
+        }
+    }
+
+    translate([- SUPPORT_WIDTH / 2 + 6.5, SUPPORT_LENGTH / 2 - 20, 0]) {
         rotate([0, 0, 90]) {
             leg(male);
         }
@@ -227,7 +252,11 @@ translate([0, 0, SUPPORT_THICKNESS+1]) {
 
 translate([0, -50, 7.5]) {
     rotate([-6, 0, 0]) {
+<<<<<<< HEAD
 roundedBox([FAN_WIDTH, FAN_WIDTH, 2], FAN_CORNER_DIAMETER, true);
+=======
+        %roundedBox([FAN_WIDTH, FAN_WIDTH, 2], FAN_CORNER_DIAMETER, true);
+>>>>>>> 45260e9129cb78fc8d4e880e83418701329745d9
     }
 }
 
