@@ -23,6 +23,8 @@ MARGIN_HEIGHT = 7;
 
 PYRAMID_HEIGHT = 20;
 
+ARM_THICKNESS = 7;
+
 /*
  *  AUTOMATICALLY GENERATED VARIABLE
  *  DO NOT TOUCH THIS !
@@ -41,84 +43,8 @@ module fan() {
     }
 }
 
-PIVOT_HEIGHT = 5;
-module pivot(male = true, diff = false) {
-    female_diameter = 12;
-    male_diameter = 20;
-
-    if (diff) {
-        //cylinder(r = 1.8, h = WIDTH * 2, center = true);
-        m4_hole(WIDTH * 2);
-
-        for (pos = [
-            [0, 0, FILTER_WIDTH / 2],
-            [0, 0, -FILTER_WIDTH / 2],
-        ]) {
-            translate(pos) {
-                m4_nut(5);
-                //cylinder(r = 4.0, h = 4, center = true, $fn = 6);
-            }
-        }
-    } else {
-        if (male) {
-            cylinder(r = female_diameter / 2, h = PIVOT_HEIGHT, center = true);
-        } else {
-            difference() {
-                cylinder(r = male_diameter / 2, h = PIVOT_HEIGHT * 2, center = true);
-                translate([0, 0, -female_diameter / 2 + PIVOT_HEIGHT / 2 + 0.95]) {
-                    cylinder(r = female_diameter / 2 + 1, h = PIVOT_HEIGHT, center = true);
-                }
-                m3_hole();
-            }
-        }
-    }
-}
-
-module armUlti() {
-    length = 53;
-    difference() {
-        translate([0, 0, - 37]) {
-            cube(size = [10, 10, length], center = true);
-        }
-
-        %translate([0, 3, - 32]) {
-            cube(size = [50, 4, 5.2], center = true);
-        }
-
-        translate([0, 3, - 64 / 2 + 0.8]) {
-            cube(size = [50, 4, 6.8], center = true);
-        }
-    }
-
-    %translate([-5, 9.5, -57]) {
-        translate([0, -4.5, -5.5])
-        cube(size = [10, 5, 28]);
-    }
-
-    translate([-5, 9.5, -55.5]) {
-        rotate([0, -90, 180]) {
-            linear_extrude(height = 10) {
-                polygon([
-                    [-7,14.5],[-9,14.5],[-11,7],[-11,-4],[-5,-4],[-5,-2],[-7,-2],[-7,2],[-7,2],[-7,2]
-                ]);
-            }
-        }
-    }
-}
-
-ARM_WIDTH = 10;
-ARM_THICKNESS = 10;
-
+/*
 module armsUlti() {
-
-    for (pos = [
-        [WIDTH / 2 + 5, 0, 0],
-        [-WIDTH / 2 - 5, 0, 0],
-    ]) {
-        translate(pos) {
-            armUlti();
-        }
-    }
 
     cube(size = [WIDTH + ARM_THICKNESS * 2 - ARM_THICKNESS * 2, 10, ARM_WIDTH], center = true);
 
@@ -141,53 +67,139 @@ module armsUlti() {
         }
     }
 }
+*/
 
-module arm() {
-    length = 200;
-    offset_y = 8;
-    rotate([0, 90, 0]) {
-        pivot(male = false);
-    }
+PIVOT_HEIGHT = 5;
+PIVOT_MALE_DIAMETER = 16;
+module pivot(male = true, diff = false) {
+    female_diameter = 12;
+    male_diameter = PIVOT_MALE_DIAMETER;
+    offset = 0.95;
+    clear = 0.2;
 
-    translate([0, -length / 2 - offset_y, 0]) {
-        cube(size = [ARM_THICKNESS, length, ARM_WIDTH], center = true);
+    if (diff) {
+        //cylinder(r = 1.8, h = WIDTH * 2, center = true);
+        m4_hole(WIDTH * 2);
+
+        for (pos = [
+            [0, 0, FILTER_WIDTH / 2],
+            [0, 0, -FILTER_WIDTH / 2],
+        ]) {
+            translate(pos) {
+                m4_nut(5);
+                //cylinder(r = 4.0, h = 4, center = true, $fn = 6);
+            }
+        }
+    } else {
+        if (male) {
+            color("orange") {
+                translate([0, 0, -PIVOT_HEIGHT / 2 + offset / 2]) {
+                    cylinder(r = male_diameter / 2, h = 1, center = true);
+                }
+                translate([0, 0, 1]) {
+                    cylinder(r = female_diameter / 2, h = PIVOT_HEIGHT, center = true);
+                }
+            }
+        } else {
+            difference() {
+                cylinder(r = male_diameter / 2, h = PIVOT_HEIGHT + 2, center = true);
+                translate([0, 0, -PIVOT_HEIGHT / 2 + offset + clear]) {
+                    cylinder(r = female_diameter / 2 + clear, h = PIVOT_HEIGHT + offset, center = true);
+                }
+                m4_hole();
+
+                /*
+                translate([-4, -4, -female_diameter / 2 + PIVOT_HEIGHT + offset - 10]) {
+                    cube(size = [20, 30, 20]);
+                }
+                */
+            }
+        }
     }
 }
 
-module arms() {
-    length = 200;
-    offset_y = 8;
+arm_thickness = ARM_THICKNESS;
+arm_length = 95;
+offset = 1;
+offset_arm = 6;
 
-/*
+module cyl(diff = false) {
+    rotate([90, 0, 0]) {
+        cylinder(r = PIVOT_MALE_DIAMETER / 2, h = arm_thickness, center = true);
+    }
+}
+
+module handle() {
+
     for (pos = [
-            [WIDTH / 2 + PIVOT_HEIGHT, 0, 0],
-            [-WIDTH / 2 - PIVOT_HEIGHT, 0, 0]
-        ]) {
-        translate(pos) {
-            arm();
+        [WIDTH / 2 + arm_thickness / 2 + offset, 0],
+        [-WIDTH / 2 - arm_thickness / 2 - offset, 180]
+    ]) {
+        translate([pos[0], 0, 0]) {
+            rotate([0, 90, pos[1]]) {
+                pivot(male = false);
+            }
+        }
+
+        translate([pos[0], -offset_arm, 0]) {
+            rotate([0, pos[1], 0]) {
+                arm(arm_length);
+            }
         }
     }
-*/
-    arm();
-    translate([0, -length - offset_y + 20, 0]) {
 
-/*
-        difference() {
-            armHandler();
+    length = WIDTH + offset * 2;// + arm_thickness * 2 + offset * 2;
 
-            for (pos = [
-                [-WIDTH / 2 - ARM_THICKNESS / 2, length / 2, 0],
-                [WIDTH / 2 + ARM_THICKNESS / 2, length / 2, 0],
-            ]) {
-                translate(pos) {
-                    scale([1.05, 1.05, 1.05]) {
-                        arm();
+    difference() {
+        union() {
+            // Lateral arm
+            rotate([0, 0, 90]) {
+                translate([-arm_length - offset_arm + arm_thickness / 2, length / 2, 0]) {
+                    arm(length, arm_thickness, false);
+                }
+            }
+
+            translate([0, -arm_length - offset_arm + arm_thickness / 2, 0]) {
+                cyl();
+            }
+        }
+
+        rotate([90, 0, 0]) {
+            m4_hole();
+        }
+    }
+}
+
+ARM_WIDTH = 10;
+ARM_THICKNESS = 7;
+
+module arm(length, thickness = ARM_THICKNESS, light = true) {
+
+    module tank(diameter, length) {
+        cylinder(r = diameter / 2, h = length);
+        sphere(r = diameter / 2);
+        translate([0, 0, length]) {
+            sphere(r = thickness / 2);
+        }
+    }
+
+    difference() {
+        translate([0, -length / 2, 0]) {
+            cube(size = [thickness, length, ARM_WIDTH], center = true);
+        }
+  
+        if (light) {
+            rotate([90, 0, 0]) {
+                for (pos = [
+                    [-thickness / 1.15, 0, thickness / 2 + 1],
+                    [thickness / 1.15, 0, thickness / 2 + 1],
+                ]) {
+                    translate(pos) {
+                        tank(thickness, length - thickness - 1);
                     }
                 }
             }
         }
-*/
-        //armsUlti();
     }
 }
 
@@ -295,7 +307,6 @@ module m2_hole() {
     cylinder(r = 1.2, h = WIDTH * 2, center = true);
 }
 
-
 if (0) {
     difference() {
         cube(size = [35, 12, 4], center = true);
@@ -319,12 +330,29 @@ if (0) {
         }
     }
 } else {
-    //body();
+    /*
     intersection() {
-    cube(size = [50, 50, 50], center = true);
-    arms();
+        cube(size = [50, 50, 50], center = true);
+        arms();
     }
-    //armUlti();
+    */
+    //armsUlti();
+
+    body();
+    handle();
+
+/*
+    difference() {
+        pivot(true);
+        pivot(true, true);
+    }
+
+    //translate([0, 20, 0])
+    //difference() {
+        %pivot(false);
+        //pivot(false, true);
+    //}
+*/
 }
 
 //translate([0, 0, HEIGHT / 2]) {
