@@ -37,26 +37,11 @@ arm_length = 95;
 offset = 1;
 offset_arm = 6;
 
-module handleVerticalBase() {
-    coeff = 1.06;
-    difference() {
-        cyl();
+HANDLER_HEIGHT = 4;
 
-        scale([coeff, coeff, coeff]) {
-            arm(10, arm_thickness, false);
-        }
+module ultiHandle() {
 
-        translate([0, 10, 0]) {
-            rotate([90, 0, 0]) {
-                cylinder(r = 2.05, h = 20);
-            }
-        }
-    }
-}
-
-module handleVertical() {
-
-    height = 40;
+    height = HANDLER_HEIGHT;
 
     // Arm
     difference() {
@@ -68,14 +53,26 @@ module handleVertical() {
             translate([0, -3, 0]) {
                 arm(height, arm_thickness, true);
             }
+
+            translate([0, -height - 8, 0]) {
+                cube(size = [45, 10, 10], center = true);
+            }
         }
 
-        rotate([90, 0, 0]) {
-            cylinder(r = 2.05, h = 150);
+        translate([0, -height - 8 - 3.6, 0]) {
+            rotate([90, 0, 0]) {
+                m4_nut();
+            }
+        }
+
+        translate([0, 75, 0]) {
+            rotate([90, 0, 0]) {
+                cylinder(r = 2.05, h = 150);
+            }
         }
     }
 
-    module armUlti() {
+    module ultiArm() {
         length = 53;
         thickness = 5;
         difference() {
@@ -99,10 +96,6 @@ module handleVertical() {
         }
     }
 
-    translate([0, -height - 8, 0]) {
-        cube(size = [45, 10, 10], center = true);
-    }
-
     distance = height + 8;
     rotate([0, 0, 0]) {
         for (pos = [
@@ -110,23 +103,48 @@ module handleVertical() {
             [-20, -distance, 10],
         ]) {
             translate(pos) {
-                armUlti();
+                ultiArm();
             }
+        }
+    }
+}
+
+module ultimaker() {
+    echo();
+    translate([0, -(arm_length + HANDLER_HEIGHT) + 2, -21]) {
+        cube(size = [100, 35, 5], center = true);
+    
+            translate([0, -11.5, -16]) {
+            cube(size = [100, 5, 30], center = true);
         }
     }
 }
 
 module demo() {
     rotate([-90, 0, 0]) {
-        body();
+        support();
         handle();
 
         translate([0, -arm_length - 9, 0]) {
-            handleVerticalBase();
-            handleVertical();
+            verticalBase();
+            ultiHandle();
         }
+
+        ultimaker();
     }
 }
 
-demo();
+if (1) {
+    //ultiHandle();
+    //verticalBase();
+    //handle();
+
+    %difference() {
+        pivot(true);
+        pivot(true, true);
+    }
+    pivot(false);
+} else {
+    demo();
+}
 

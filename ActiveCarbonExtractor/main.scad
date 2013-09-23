@@ -176,10 +176,12 @@ ARM_THICKNESS = 7;
 module arm(length, thickness = ARM_THICKNESS, light = true) {
 
     module tank(diameter, length) {
-        cylinder(r = diameter / 2, h = length);
-        sphere(r = diameter / 2);
-        translate([0, 0, length]) {
-            sphere(r = thickness / 2);
+        if (diameter / 2 < length) {
+            cylinder(r = diameter / 2, h = length);
+            sphere(r = diameter / 2);
+            translate([0, 0, length]) {
+                sphere(r = thickness / 2);
+            }
         }
     }
 
@@ -203,7 +205,24 @@ module arm(length, thickness = ARM_THICKNESS, light = true) {
     }
 }
 
-module body() {
+module verticalBase() {
+    coeff = 1.06;
+    difference() {
+        cyl();
+
+        scale([coeff, coeff, coeff]) {
+            arm(10, arm_thickness, false);
+        }
+
+        translate([0, 10, 0]) {
+            rotate([90, 0, 0]) {
+                cylinder(r = 2.05, h = 20);
+            }
+        }
+    }
+}
+
+module support() {
 
     module pyramid() {
         width = WIDTH / 2 * sqrt(2);
@@ -228,11 +247,11 @@ module body() {
             pyramid();
 
             for (pos = [
-                    [WIDTH / 2 + PIVOT_HEIGHT / 2, 0, 0],
-                    [-WIDTH / 2 - PIVOT_HEIGHT / 2, 0, 0]
+                    [WIDTH / 2 + PIVOT_HEIGHT / 2, 0],
+                    [-WIDTH / 2 - PIVOT_HEIGHT / 2, 180]
                 ]) {
-                translate(pos) {
-                    rotate([0, 90, 0]) {
+                translate([pos[0], 0, 0]) {
+                    rotate([0, 90, pos[1]]) {
                         pivot();
                     }
                 }
@@ -283,7 +302,7 @@ module body() {
     }
 }
 
-module m4_nut(height = 2) {
+module m4_nut(height = 3) {
     cylinder(r = 4.3, h = height, center = true, $fn = 6);
 }
 
@@ -338,8 +357,8 @@ if (0) {
     */
     //armsUlti();
 
-    body();
-    handle();
+    support();
+    //handle();
 
 /*
     difference() {
