@@ -3,34 +3,11 @@ use <main.scad>
 
 $fn = 60;
 
-FILTER_WIDTH = 134;
-FILTER_LENGTH = 134;
-FILTER_THICKNESS = 10;
-
-FAN_WIDTH=120;
-//FAN_WIDTH=80;
-FAN_THICKNESS=25;
-FAN_DIAMETER=120;
-//FAN_DIAMETER=70;
-
-HEIGHT=22;
-
-HOLE_DISTANCE = 105 / 2;
-HOLE_DIAMETER = "M3";
-
-MARGIN = 10;
-MARGIN_HEIGHT = 7;
-
-PYRAMID_HEIGHT = 20;
-
 /*
  *  AUTOMATICALLY GENERATED VARIABLE
  *  DO NOT TOUCH THIS !
  */
-WIDTH = FILTER_WIDTH + MARGIN;
-
 ARM_THICKNESS = 7;
-PIVOT_MALE_DIAMETER = 16;
 
 arm_thickness = ARM_THICKNESS;
 arm_length = 95;
@@ -134,7 +111,7 @@ module demo() {
     }
 }
 
-if (1) {
+if (0) {
     //ultiHandle();
     //verticalBase();
     //handle();
