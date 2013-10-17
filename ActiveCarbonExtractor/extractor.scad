@@ -16,6 +16,7 @@ offset_arm = 6;
 
 HANDLER_HEIGHT = 3;
 
+/*
 module attach() {
 
     height = HANDLER_HEIGHT;
@@ -42,7 +43,7 @@ module attach() {
                 m4_nut();
             }
         }
-*/
+*-/
 
         }
 
@@ -66,6 +67,75 @@ module attach() {
         }
     }
 }
+*/
+
+module attach() {
+
+    height = HANDLER_HEIGHT;
+
+    // Arm
+    difference() {
+        union() {
+            translate([0, -height, 0]) {
+                cube(size = [7, 10, 10], center = true);
+            }
+
+            translate([0, -height - 3, 0]) {
+                cube(size = [10, 5, 10], center = true);
+            }
+        }
+
+        translate([0, -height - 4.6, 0]) {
+            rotate([90, 90, 0]) {
+                m4_nut();
+            }
+        }
+
+        translate([0, 75, 0]) {
+            rotate([90, 0, 0]) {
+                cylinder(r = 2.05, h = 150);
+            }
+        }
+    }
+
+/*
+    %translate([0, 0, 0]) {
+        cube(size = [7, 100, 10], center = true);
+    }
+*/
+    arm_spacing = 8;
+
+    module arm() {
+        diameter = 4;
+        length = 12;
+        difference() {
+            union() {
+                translate([-2, -length / 2, 0]) {
+                    rotate([0, 90, 0]) {
+                        cylinder(r = 5, h = 4);
+                    }
+                }
+
+                cube(size = [4, length, 10], center = true);
+            }
+
+            translate([-2, -length / 2, 0]) {
+                rotate([0, 90, 0]) {
+                    cylinder(r = 2, h = 50, center = true);
+                }
+            }
+        }
+    }
+
+    for (pos = [
+        [arm_spacing / 2 + 2, -9.5, 0],
+        [-arm_spacing / 2 - 2, -9.5, 0]
+    ]) {
+        translate(pos) {
+            arm();
+        }
+    }
+}
 
 module demo() {
     rotate([-90, 0, 0]) {
@@ -79,10 +149,10 @@ module demo() {
     }
 }
 
-if (0) {
+if (1) {
     attach();
-    verticalBase();
-    handle();
+    %verticalBase();
+    //handle();
 /*
     %difference() {
         pivot(true);

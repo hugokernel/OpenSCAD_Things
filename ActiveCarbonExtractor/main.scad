@@ -7,7 +7,7 @@ FILTER_WIDTH = 134;
 FILTER_LENGTH = 134;
 FILTER_THICKNESS = 10;
 
-FAN_WIDTH=72;
+FAN_WIDTH=80;
 FAN_THICKNESS=25;
 FAN_DIAMETER=77;
 HOLE_DISTANCE = 72 / 2;
@@ -383,9 +383,11 @@ if (0) {
 //    cube(size = [10, 10, HEIGHT], center = true);
 //}
 
+/*
 translate([0, 0, HEIGHT + PYRAMID_HEIGHT]) {
-    //%fan();
+    %fan();
 }
+*/
 
 //translate([0, -10, 0])
 //    %filter();
