@@ -69,8 +69,12 @@ myrodpitch = 0.907; //not sure about that, so I suggest threading the coupling i
 
 
 baseAndRiser();
-//bowdenSupport();
 
+/*
+translate([0, 0, -2])
+cube(size = [18, 25, 4], center = true);
+bowdenSupport();
+*/
 
 
 module bowdenSupport() {
@@ -108,7 +112,7 @@ module baseAndRiser(){
         translate ([-outsideHolesFromCentre,outsideHolesFromCentre,2])
             cylinder(r = washerDiameter / 2, h = baseHeight);
 
-        translate([-10, 9, 10]) {
+        translate([-10, 13, 10]) {
             rotate([0, 0, -45]) {
                 electronicSupport();
             }
@@ -137,6 +141,23 @@ module baseAndRiser(){
     translate([tubeCentre[0], -tubeCentre[1], 0]) {
         bowdenSupport();
     }
+
+/*
+    color([0.4, 0.4, 0.4]) {
+        translate([-10, 13, 10]) {
+            rotate([0, 0, -45]) {
+                electronicSupport();
+            }
+        }
+
+        // Second electronic support
+        translate([-4, -7, 10]) {
+            rotate([0, 0, 180]) {
+                electronicSupport();
+            }
+        }
+    };
+*/
 }
 
 module electronicSupport() {
