@@ -51,7 +51,7 @@ module ultiHandle() {
 
     module ultiArm() {
         length = 53;
-        thickness = 5;
+        thickness = 15;
         difference() {
             translate([0, 0, - 37]) {
                 cube(size = [thickness, 10, length], center = true);
@@ -76,8 +76,8 @@ module ultiHandle() {
     distance = height + 8;
     rotate([0, 0, 0]) {
         for (pos = [
-            [20, -distance, 10],
-            [-20, -distance, 10],
+            [15, -distance, 10],
+            [-15, -distance, 10],
         ]) {
             translate(pos) {
                 ultiArm();
@@ -112,15 +112,17 @@ module demo() {
 }
 
 if (0) {
-    //ultiHandle();
+    ultiHandle();
     //verticalBase();
     //handle();
 
+    /*
     %difference() {
         pivot(true);
         pivot(true, true);
     }
     pivot(false);
+    */
 } else {
     demo();
 }

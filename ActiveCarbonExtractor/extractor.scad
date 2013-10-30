@@ -81,7 +81,7 @@ module attach() {
             }
 
             translate([0, -height - 3, 0]) {
-                cube(size = [10, 5, 10], center = true);
+                cube(size = [12, 5, 16], center = true);
             }
         }
 
@@ -98,41 +98,45 @@ module attach() {
         }
     }
 
-/*
-    %translate([0, 0, 0]) {
-        cube(size = [7, 100, 10], center = true);
-    }
-*/
-    arm_spacing = 8;
+    arm_spacing = 11;
 
-    module arm() {
+    %translate([0, 0, 0]) {
+        cube(size = [arm_spacing, 100, 10], center = true);
+    }
+
+    module arm(nut = false) {
         diameter = 4;
-        length = 12;
+        length = 13;
+        height = 16;
+        thickness = 6;
         difference() {
             union() {
-                translate([-2, -length / 2, 0]) {
+                translate([0, -length / 2, 0]) {
                     rotate([0, 90, 0]) {
-                        cylinder(r = 5, h = 4);
+                        cylinder(r = height / 2, h = thickness, center = true);
                     }
                 }
 
-                cube(size = [4, length, 10], center = true);
+                cube(size = [thickness, length, height], center = true);
             }
 
-            translate([-2, -length / 2, 0]) {
+            translate([-1.6, -length / 2, 0]) {
                 rotate([0, 90, 0]) {
-                    cylinder(r = 2, h = 50, center = true);
+                    m4_hole();
+                    if (nut) {
+                        m4_nut();
+                    }
                 }
             }
         }
     }
 
     for (pos = [
-        [arm_spacing / 2 + 2, -9.5, 0],
-        [-arm_spacing / 2 - 2, -9.5, 0]
+        [arm_spacing / 2 + 3, -10, 0, false],
+        [-arm_spacing / 2 - 3, -10, 0, true]
     ]) {
-        translate(pos) {
-            arm();
+        translate([pos[0], pos[1], pos[2]]) {
+            arm(pos[3]);
         }
     }
 }
@@ -149,7 +153,7 @@ module demo() {
     }
 }
 
-if (1) {
+if (0) {
     attach();
     %verticalBase();
     //handle();
