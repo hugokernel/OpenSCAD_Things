@@ -78,7 +78,7 @@ PIVOT_HEIGHT = 5;
 PIVOT_MALE_DIAMETER = 16;
 module pivot(male = true, diff = false) {
     female_diameter = 12;
-    male_diameter = PIVOT_MALE_DIAMETER;
+    male_diameter = PIVOT_MALE_DIAMETER + 4;
     offset = 0.95;
     clear = 0.2;
 
@@ -362,8 +362,8 @@ if (0) {
     */
     //armsUlti();
 
-    support();
-    //handle();
+    //support();
+    handle();
 
 /*
     difference() {

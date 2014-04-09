@@ -87,8 +87,7 @@ module ultiHandle() {
 }
 
 module ultimaker() {
-    echo();
-    translate([0, -(arm_length + HANDLER_HEIGHT) + 2, -21]) {
+    color([ 200 / 255, 173 / 255, 127 / 255 ]) translate([0, -(arm_length + HANDLER_HEIGHT) + 2, -21]) {
         cube(size = [100, 35, 5], center = true);
     
             translate([0, -11.5, -16]) {
