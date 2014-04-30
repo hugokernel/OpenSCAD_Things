@@ -405,9 +405,8 @@ module holeAndNut(length = 10, nut = true) {
     }
 }
 
-module socket(female = true, thickness = THICKNESS, height = 20) {
-    
-    module base(nut = true) {
+module socket(female = true, thickness = THICKNESS, height = 20, oblong = false) {
+    module base(nut = true, oblong = false) {
         difference() {
             translate([-thickness / 2, - 20, 10 - height]) {
                 cube(size = [thickness, 40, height]); //, center = true);
@@ -417,9 +416,21 @@ module socket(female = true, thickness = THICKNESS, height = 20) {
                 [3, -7, -2],
                 [3, 7, -2]
             ]) {
-                translate(pos) {
-                    rotate([0, -90, 0]) {
-                        holeAndNut(nut = nut);
+                if (oblong) {
+                    hull() {
+                        for (offset = [ 7, -height + 20 ]) {
+                            translate([ pos[0], pos[1], pos[2] + offset ]) {
+                                rotate([0, -90, 0]) {
+                                    holeAndNut(nut = nut);
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    translate(pos) {
+                        rotate([0, -90, 0]) {
+                            holeAndNut(nut = nut);
+                        }
                     }
                 }
             }
@@ -429,16 +440,17 @@ module socket(female = true, thickness = THICKNESS, height = 20) {
     if (female) {
         base();
     } else {
-        base(nut = false);
+        base(nut = false, oblong = oblong);
     }
 }
 
 module socketRing() {
-    socket(female = false, height = 25);
-    translate([-48, 0, -12.5]) {
+    height = 35;
+    socket(female = false, height = height, oblong = true);
+    translate([-58, 0, 7 + THICKNESS - height]) {
         difference() {
-            cylinder(r = 50, h = THICKNESS, center = true);
-            cylinder(r = 40, h = THICKNESS + 1, center = true);
+            cylinder(r = 121 / 2, h = THICKNESS, center = true);
+            cylinder(r = 104 / 2, h = THICKNESS + 1, center = true);
         }
     }
 }
@@ -514,9 +526,7 @@ module demo() {
 }
 
 
-
-
-!demo();
+demo();
 
 lm12uu_holder();
 
@@ -538,11 +548,13 @@ foot();             // x4
 
 dolly_ys();         // x1
 
-!union() {
-    translate([THICKNESS + 1, 0, 0]) {
+union() {
+    translate([THICKNESS + 2, 0, 0]) {
         socket();
     }
 
     socketRing();
 }
+
+!socket(female = false, height = 35, oblong = true);
 
