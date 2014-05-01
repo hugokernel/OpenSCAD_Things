@@ -7,8 +7,6 @@ BEARING_HEIGHT = 7;
 
 DEMO = true;
 
-thickness = 5;
-
 module bearing() {
     difference() {
         cylinder(r = BEARING_EXTERNAL_DIAMETER / 2, BEARING_HEIGHT, center = true);
@@ -37,7 +35,6 @@ module arm_male() {
     }
 
     translate([length / 2, 0, 0]) {
-        /*
         for (data = [
             [ -length / 2, 0 ],
             [ length / 2, 1 ]
@@ -54,51 +51,20 @@ module arm_male() {
                 }
             }
         }
-        */
-
-        translate([ -length / 2, 0, 0 ]) {
-            color("ORANGE")
-            cylinder(r = width / 2, h = thickness, center = true);
-
-            translate([0, 0, thickness / 2]) { 
-                bearing();
-
-                if ($children) {
-                    echo("FIRST!");
-                    children(0);
-                }
-            }
-        }
-
-        translate([ length / 2, 0, 0 ]) {
-            color("RED")
-            cylinder(r = width / 2, h = thickness, center = true);
-
-            translate([0, 0, thickness / 2]) { 
-                bearing();
-
-                if ($children) {
-                    echo("SECOND!");
-                    children(1);
-                }
-            }
-        }
 
         cube(size = [length, 15, thickness], center = true);
     }
 }
 
-module female_bearing(width = 30, thickness = 5, clear = 0) {
+module female_bearing(width, thickness, clear) {
     difference() {
         cylinder(r = width / 2, h = thickness, center = true);
         cylinder(r = BEARING_EXTERNAL_DIAMETER / 2 + clear, thickness + 1, center = true);
     }
 
     if ($children) {
-        translate([0, 0, -thickness]) {
-            for (i = [0 : $children - 1]) {
-                children(i);
-            }
+        for (i = [0 : $children - 1]) {
+            children(i);
         }
     }
 
@@ -112,27 +78,24 @@ module female_bearing(width = 30, thickness = 5, clear = 0) {
 module arm_female(gap = 40) {
 
     width = 30;
+    thickness = 5;
 
     clear = 0.2;
 
-    translate([gap / 2, 0, 0]) {
-        for (data = [
-            [ -gap / 2, 0 ],
-            [ gap / 2, 1 ]
-        ]) {
-            translate([ data[0], 0, 0 ]) {
-                female_bearing(width = width, thickness = thickness, clear = clear) {
-                    if ($children) {
-                        translate([0, 0, -thickness]) {
-                            children(data[1]);
-                        }
-                    }
+    for (data = [
+        [ -gap / 2, 0 ],
+        [ gap / 2, 1 ]
+    ]) {
+        translate([ data[0], 0, 0 ]) {
+            female_bearing(width = width, thickness = thickness, clear = clear) {
+                if ($children) {
+                    children(data[1]);
                 }
             }
         }
-
-        cube(size = [gap - BEARING_EXTERNAL_DIAMETER - clear * 2, 15, thickness], center = true);
     }
+
+    cube(size = [gap - BEARING_EXTERNAL_DIAMETER - clear * 2, 15, thickness], center = true);
 }
 
 module arm_female_special() {
@@ -158,56 +121,67 @@ module arm_female_special() {
     }
 }
 
-module dbl_arm_male() {
-    arm_male();
-    translate([0, 0, 11]) {
-        rotate([ 180, 0, 0]) {
-            arm_male() {
-                if ($children) {
-                    translate([0, 0, thickness / 2]) {
-                        for (i = [0 : $children - 1]) {
-                            children(i);
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
 module demo() {
 
     final_horizontal_angle = 0;
     vertical_angle = 0;
 
-    module dummy() {
-        cylinder(r = 10, h = 50);
-        echo("DUMMY");
+    module dbl_arm_male() {
+        arm_male();
+        translate([0, 0, 11]) {
+            rotate([ 180, 0, 0]) {
+                arm_male();/* {
+                    if ($children) {
+                        for (i = [0 : $children - 1]) {
+                            children(i);
+                        }
+                    }
+                }*/
+            }
+        }
     }
 
     socket(female = false, height = 35, oblong = true);
 
-    first_horizontal_angle = 0;
+    translate([-60, 45, 0]) {
+        rotate([0, 0, 45]) {
+            arm_male() {
+                translate([0, 0, 3]) {
+                    rotate([0, 90, -45 + final_horizontal_angle]) {
+                        arm_female_special() {
+                            translate([40, 0, -6]) {
+                                rotate([0, 0, -60 + vertical_angle]) {
+                                    dbl_arm_male() {
+                                        //arm_female_special();
+                                    }
+                                }
+                            }
+                            translate([0, 0, -6]) {
+                                rotate([0, 0, -60 + vertical_angle]) {
+                                    dbl_arm_male();
+                                }
+                            }
+                        }
+                    }
+                }
 
-    translate([-20, 40, 0]) {
-        rotate([0, 0, 180 + first_horizontal_angle]) {
-            female_bearing() {
-                dbl_arm_male() {
-                    dummy();
-                    rotate([0, 0, 90])arm_female();
+                translate([0, -20, 3]) {
+                    rotate([0, 0, 90]) {
+                        arm_female();
+                    }
+                }
+            }
+
+            translate([0, 0, 9]) {
+                rotate([180, 0, 0]) {
+                    arm_male();
                 }
             }
         }
     }
 }
 
-//!arm_male() {
-!dbl_arm_male() {
-    cylinder(r = 3, h = 50);
-    cylinder(r = 4, h = 50);
-}
-
-demo();
+!demo();
 
 intersection() {
     translate([20, 0, 0])
