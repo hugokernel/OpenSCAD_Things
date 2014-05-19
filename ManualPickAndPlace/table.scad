@@ -395,10 +395,7 @@ module dolly_y() {
     }
 }
 
-module holeAndNut(length = 10, nut = true) {
-    hole_diameter = 5.5;
-    hole_nut_diameter = 9.5;
-
+module holeAndNut(length = 10, nut = true, hole_diameter = 5.5, hole_nut_diameter = 9.5) {
     cylinder(r = hole_diameter / 2, h = length);
     if (nut) {
         cylinder(r = hole_nut_diameter / 2, h = 5, center = true, $fn = 6);
@@ -406,7 +403,7 @@ module holeAndNut(length = 10, nut = true) {
 }
 
 module socket(female = true, thickness = THICKNESS, height = 20, oblong = false) {
-    module base(nut = true, oblong = false) {
+    module base(nut = true, oblong = false, hole_diameter = hole_diameter, hole_nut_diameter = hole_nut_diameter) {
         difference() {
             translate([-thickness / 2, - 20, 10 - height]) {
                 cube(size = [thickness, 40, height]); //, center = true);
@@ -421,7 +418,7 @@ module socket(female = true, thickness = THICKNESS, height = 20, oblong = false)
                         for (offset = [ 7, -height + 20 ]) {
                             translate([ pos[0], pos[1], pos[2] + offset ]) {
                                 rotate([0, -90, 0]) {
-                                    holeAndNut(nut = nut);
+                                    holeAndNut(nut = nut, hole_diameter = hole_diameter, hole_nut_diameter = hole_nut_diameter);
                                 }
                             }
                         }
@@ -429,7 +426,7 @@ module socket(female = true, thickness = THICKNESS, height = 20, oblong = false)
                 } else {
                     translate(pos) {
                         rotate([0, -90, 0]) {
-                            holeAndNut(nut = nut);
+                            holeAndNut(nut = nut, hole_diameter = hole_diameter, hole_nut_diameter = hole_nut_diameter);
                         }
                     }
                 }
