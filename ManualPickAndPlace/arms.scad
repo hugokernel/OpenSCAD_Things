@@ -72,9 +72,9 @@ module arm_male(width = 15, length = 40, thickness = ARM_THICKNESS, holder_heigh
 }
 
 closed_cap_thickness = 2.5;
-module female_bearing(width = 30, thickness = THICKNESS, clear = 0, closed = false) {
+module female_bearing(width = 30, thickness = THICKNESS, clear = 0, closed = false, fn = $fn) {
     difference() {
-        cylinder(r = width / 2, h = thickness, center = true);
+        cylinder(r = width / 2, h = thickness, center = true, $fn = fn);
         cylinder(r = BEARING_EXTERNAL_DIAMETER / 2 + clear, thickness + 1, center = true);
     }
 
@@ -130,9 +130,7 @@ module arm_female(gap = 40, thickness = 5, closed = false) {
     }
 }
 
-module arm_female_special(thickness = 5, closed = false) {
-
-    width = 30;
+module arm_female_special(thickness = 5, closed = false, width = 35, fn = $fn) {
 
     clear = 0.2;
 
@@ -148,7 +146,7 @@ module arm_female_special(thickness = 5, closed = false) {
 
         translate([0, 0, 18]) {
             rotate([0, 90, 0]) {
-                female_bearing(width = width, thickness = thickness, clear = clear);
+                female_bearing(width = width, thickness = thickness, clear = clear, fn = fn);
             }
         }
     }
@@ -208,9 +206,9 @@ module holder() {
 
     translate([0, 0, 24]) {
         difference() {
-            union() {
+            hull() {
                 rotate([0, 90, 0]) {
-                    cylinder(r = HOLDER_DIAMETER / 2 + 3, h = thickness, center = true);
+                    cylinder(r = HOLDER_DIAMETER / 2 + 6, h = thickness, center = true);//, $fn = 10);
                 }
 
                 translate([0, 0, -16]) {
@@ -228,20 +226,21 @@ module holder() {
 }
 
 module mountPoint() {
+    thickness = BEARING_HEIGHT;
     union() {
         socket(female = false, height = 35, oblong = true, hole_diameter = 4.5);
 
-        translate([0, 10, 5]) {
+        translate([0, 10, 3]) {
             rotate([0, 0, 90]) {
-                linear_extrude(height = 5) {
+                linear_extrude(height = thickness) {
                     polygon([[0,0],[18,0],[18,5],[14,10],[12.5,23]]);
                 }
             }
         }
 
-        translate([-2.5, 18.5, -7]) {
+        translate([-2.5, 18, -7]) {
             rotate([-90,-180, 0]) {
-                linear_extrude(height = 5) {
+                linear_extrude(height = thickness - 1) {
                     polygon([[0,0],[0,12],[12, 12]]);
                 }
             }
@@ -256,9 +255,9 @@ module mountPoint() {
         }
     }
 
-    translate([-15, 35, 2.5]) {
+    translate([-15, 35, 1.5]) {
         translate([0, 0, 5]) {
-            female_bearing();
+            female_bearing(thickness = thickness);
         }
     }
 }
@@ -337,7 +336,7 @@ module tripod(blocker = false) {
         }
     }
 
-    arm_female_special(thickness = thickness, closed = true);
+    arm_female_special(thickness = thickness, closed = true, width = 38);//, fn = 10);
 
     if (blocker) {
         translate([gap / 2, 0, -14.75]) {
@@ -358,16 +357,16 @@ module tripod(blocker = false) {
 
 demo();
 
-mountPoint();
+!mountPoint();
 
 arm_male(length=40, holder_height=BEARING_HEIGHT);
-!arm_male(length=40);
+arm_male(length=40);
 
 tripod(blocker = true);
-tripod();
+
 armWithBlocker();
 
-module hold() {
+module demo_hold() {
     holder();
     translate([0, 0, 24]) {
         rotate([0, 90, 0]) {
@@ -377,7 +376,7 @@ module hold() {
 }
 
 holder();
-hold();
+demo_hold();
 holder_male();
 
 intersection() {
