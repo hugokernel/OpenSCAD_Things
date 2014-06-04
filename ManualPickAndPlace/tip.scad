@@ -1,16 +1,21 @@
 
 $fn = 40;
 
-use <Thread_Library.scad>
-use <tip_OLD.scad>
+use <lib/Thread_Library.scad>
+//use <tip_OLD.scad>
 
 BEARING_INTERNAL_DIAMETER = 7.8;
+BEARING_HEIGHT = 7;
 
 TUBE_DIAMETER = 4;
-TUBE_CLEARANCE = 0.62;
-TUBE_CLEARANCE_JAM = 0.22;
+TUBE_CLEARANCE = 0.9;
+TUBE_CLEARANCE_JAM = 0.32;
 
-WASHER_THICKNESS = 0.4;
+LINK_HEIGHT = 42;
+
+WASHER_THICKNESS = 1.1;
+WASHER_DIAMETER = 12;
+WASHER_INTERNAL_DIAMETER = 5;
 
 module tube(diameter = 4, thickness = 0.4, length = 115) {
     difference() {
@@ -21,7 +26,7 @@ module tube(diameter = 4, thickness = 0.4, length = 115) {
     }
 }
 
-module blocker(length = 6, diameter = TUBE_DIAMETER + TUBE_CLEARANCE_JAM, thickness = 2) {
+module blocker(length = 6, diameter = TUBE_DIAMETER + TUBE_CLEARANCE_JAM, thickness = 2, hole_diameter = 0.7) {
     difference() {
         cylinder(r = diameter / 2 + thickness, h = length);
         translate([0, 0, -1]) {
@@ -30,8 +35,31 @@ module blocker(length = 6, diameter = TUBE_DIAMETER + TUBE_CLEARANCE_JAM, thickn
 
         translate([0, 0, length / 2]) {
             rotate([0, 90, 0]) {
-                cylinder(r = 1, h = diameter * 2, center = true);
+                cylinder(r = hole_diameter, h = diameter * 2, center = true);
             }
+        }
+    }
+}
+
+module blocker_big(chamfrein = true) {
+    diameter = BEARING_INTERNAL_DIAMETER + 0.3;
+    thickness = 2;
+
+    blocker(diameter = diameter, thickness = thickness);
+
+    if (chamfrein) {
+        difference() {
+            hull() {
+                translate([0, 0, 6]) {
+                    blocker(diameter = diameter, thickness = thickness, length = .1);
+                }
+
+                translate([0, 0, 11]) {
+                    blocker(diameter = diameter, thickness = 0.5, length = .1);
+                }
+            }
+
+            cylinder(r = diameter / 2, h = 20);
         }
     }
 }
@@ -79,28 +107,36 @@ module thread(male = true) {
     }
 }
 
-module support() {
-    support_length = 42;
+LINK_HEIGHT = 47;
+module link() {
     bearing_clear = 0.055;
 
     difference() {
         union() {
-            cylinder(r = BEARING_INTERNAL_DIAMETER / 2 + bearing_clear, h = support_length);
+            cylinder(r = BEARING_INTERNAL_DIAMETER / 2 + bearing_clear, h = LINK_HEIGHT);
 
-            translate([0, 0, 8]) {
-                /*
+            /*
+            translate([0, 0, 14]) {
                 hull() {
                     cylinder(r = 12 / 2, h = 4);
-
                     translate([0, 0, 4]) {
                         cylinder(r = BEARING_INTERNAL_DIAMETER / 2, h = 5);
                     }
                 }
-                */
-                cylinder(r = 12 / 2, h = support_length - thread_length);
+                //cylinder(r = 12 / 2, h = LINK_HEIGHT - thread_length);
+            }
+            */
+
+            translate([0, 0, LINK_HEIGHT - thread_length]) {
+                hull() {
+                    cylinder(r = BEARING_INTERNAL_DIAMETER / 2, h = 5);
+                    translate([0, 0, 4]) {
+                        cylinder(r = 12 / 2, h = 4);
+                    }
+                }
             }
 
-            translate([0, 0, 41.9]) {
+            translate([0, 0, LINK_HEIGHT - 0.3]) {
                 thread();
             }
         }
@@ -108,10 +144,21 @@ module support() {
         translate([0, 0, -0.5]) {
             cylinder(r = (TUBE_DIAMETER + TUBE_CLEARANCE) / 2, h = 100);
         }
+
+        for (pos = [
+            [0, 0, BEARING_HEIGHT / 2 + 13 - 0.5],
+            [0, 0, BEARING_HEIGHT / 2 - 0.5]
+        ]) {
+            translate(pos) {
+                rotate([0, 90, 0]) {
+                    cylinder(r = 0.7, h = 50, center = true);
+                }
+            }
+        }
     }
 }
 
-module washer(diameter = 15, internal_diameter = 5, thickness = WASHER_THICKNESS) {
+module washer(diameter = WASHER_DIAMETER, internal_diameter = WASHER_INTERNAL_DIAMETER, thickness = WASHER_THICKNESS) {
     color("GREY")
     difference() {
         cylinder(r = diameter / 2, h = thickness);
@@ -140,7 +187,7 @@ module cuff() {
         }
 
         translate([0, 0, base_height - WASHER_THICKNESS + .1]) {
-            scale([1.03, 1.03, 1.03]) {
+            scale([1.07, 1.07, 1.07]) {
                 washer(thickness = WASHER_THICKNESS * 2);
             }
         }
@@ -162,15 +209,31 @@ module cuff() {
 
     thread(male = false);
 
-    size = 6;
-    difference() {
-        translate([internal_diameter / 2 + size / 2, 0, 20]) {
+    module rail() {
+        difference() {
             cube(size = [size, size, height], center = true);
-        }
+            translate([0, 0, -10]) {
+                rotate([0, -45, 0]) {
+                    cube(size = [size, size * 2, 20], center = true);
+                }
+            }
 
-        translate([internal_diameter / 2 + size / 2, 0, 10]) {
-            rotate([0, -45, 0]) {
-                cube(size = [size, size * 2, 20], center = true);
+            translate([-size / 2, 0, 0]) {
+                cube(size = [4, 2, 50], center = true);
+            }
+        }
+    }
+
+    size = 6;
+    translate([0, 0, 20]) {
+        for (rot = [
+            [0, 0, 0],
+            [0, 0, 180]
+        ]) {
+            rotate(rot) {
+                translate([internal_diameter / 2 + size / 2, 0, 0]) {
+                    rail();
+                }
             }
         }
     }
@@ -178,11 +241,11 @@ module cuff() {
 
 module cuff_internal() {
     size = 6;
-    size_clear = .55;
+    size_clear = .7;
     internal_diameter = 10 - .5;
     height = 19;
 
-    difference() {
+    %difference() {
         union() {
             hull() {
                 cylinder(r = internal_diameter - 2, h = 2, $fn = 80);
@@ -201,15 +264,20 @@ module cuff_internal() {
             */
         }
 
-        translate([internal_diameter / 2 + size / 2, 0, 0]) {
-            cube(size = [size + size_clear, size + size_clear, 80], center = true);
+        for (pos = [
+            [internal_diameter / 2 + size / 2, 0, 0],
+            [-internal_diameter / 2 - size / 2, 0, 0]
+        ]) {
+            translate(pos) {
+                cube(size = [size + size_clear, size + size_clear, 80], center = true);
+            }
         }
 
         translate([0, 0, -1]) {
             cylinder(r = (TUBE_DIAMETER + TUBE_CLEARANCE_JAM) / 2, h = 100);
         }
 
-        // Contaact holes
+        // Contact holes
         for (pos = [
             [ -3, -2, -1 ],
             [ -3, 2, -1 ],
@@ -219,6 +287,38 @@ module cuff_internal() {
              translate(pos) {
                 cylinder(r = 0.7, h = height * 2);
             }
+        }
+
+        translate([0, 0, height]) {
+            cylinder(r = 6, h = 5, center = true);
+        }
+    }
+
+    difference() {
+        // Cap
+        translate([0, 0, height - 1]) {
+            cylinder(r = 5.8, h = 3, center = true);
+        }
+
+        translate([0, 0, height - 2]) {
+            cylinder(r = 4.7, h = 3, center = true);
+        }
+
+        translate([0, 0, -1]) {
+            cylinder(r = (TUBE_DIAMETER + TUBE_CLEARANCE) / 2, h = 100);
+        }
+
+        for (pos = [
+            [-4.1, 0, 0],
+            [4.1, 0, 0]
+        ]) {
+            translate(pos) {
+                cylinder(r = 0.6, h = 100);
+            }
+        }
+
+        translate([0, 0, height - 2]) {
+            cube(size = [20, size, 2], center = true);
         }
     }
 }
@@ -231,20 +331,48 @@ intersection() {
 */
 
 module demo(exploded = 0) {
-    %tube(diameter = TUBE_DIAMETER);
 
-    translate([0, 0, 10]) {
+    offset = $t;
+
+    translate([0, 0, offset]) {
+        color([0.9, 0.9, 0.9]) {
+            tube(diameter = TUBE_DIAMETER);
+        }
+    }
+
+    translate([0, 0, 10 + offset]) {
         blocker();
     }
 
     translate([0, 0, 30]) {
-        support();
+        link();
+   
+        for (data = [
+            [0, 0, 13 + offset, 1],
+            [0, 0, offset, 0]
+        ]) {
+            translate([data[0], data[1], data[2]]) {
+                blocker_big(chamfrein = data[3]);
+            }
+        }
     }
 
-    translate([0, 0, 72 + exploded]) {
+/*
+module blocker(length = 6, diameter = TUBE_DIAMETER + TUBE_CLEARANCE_JAM, thickness = 2) {
+            translate([0, 0, 14]) {
+                hull() {
+                    cylinder(r = 12 / 2, h = 4);
+                    translate([0, 0, 4]) {
+                        cylinder(r = BEARING_INTERNAL_DIAMETER / 2, h = 5);
+                    }
+                }
+                //cylinder(r = 12 / 2, h = LINK_HEIGHT - thread_length);
+            }
+*/
+    translate([0, 0, 30 + LINK_HEIGHT + exploded]) {
         cuff();
 
-        translate([0, 0, 11 + exploded]) {
+        translate([0, 0, 11 + exploded + offset]) {
             cuff_internal();
         }
     }
@@ -259,19 +387,26 @@ module test() {
     */
 
     intersection() {
-        support();
+        link();
         translate([0, 0, 50]) {
             cube(size = [15, 15, 30], center = true);
         }
     }
 }
 
+demo();
 demo(exploded = 25);
 test();
 
-support();
+!link();
 
-!cuff();
+cuff();
+
+intersection() {
+    cuff();
+    translate([0, 0, 10])
+    cube(size = [22, 22, 5], center = true);
+}
 
 union() {
     //%cuff();
@@ -280,8 +415,6 @@ union() {
 }
 
 blocker();
-
-translate([50, 0, 0]) {
-    tip();
-}
+blocker_big();
+blocker_big(chamfrein = false);
 

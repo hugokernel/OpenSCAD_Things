@@ -1,4 +1,6 @@
 
+include <lib/aluminiumProfiles.scad>;
+
 $fn = 60;
 
 PROFILE_WIDTH = 20;
@@ -13,7 +15,7 @@ DOLLY_X_POSITION = 100;
 DOLLY_Y_POSITION = 50;
 
 DOLLY_X_GAP = 70;
-DOLLY_Y_GAP = 60;
+DOLLY_Y_GAP = 60; // 70 !
 
 ROD_SUPPORT_HOLE_HEIGHT = 10;
 ROD_SUPPORT_THICKNESS = 20;
@@ -39,7 +41,6 @@ module linearBall() {
 }
 
 module profile(width = PROFILE_WIDTH, length = 50) {
-    include <aluminiumProfiles.scad>;
     //cube(size = [width, length, width], center = true);
     translate([ 0, length / 2, 0 ]) {
         rotate([90, 0, 0]) {
@@ -543,7 +544,7 @@ dolly_x();          // x2
 
 foot();             // x4
 
-dolly_ys();         // x1
+!dolly_ys();         // x1
 
 union() {
     translate([THICKNESS + 2, 0, 0]) {
@@ -553,5 +554,5 @@ union() {
     socketRing();
 }
 
-!socket(female = false, height = 35, oblong = true);
+socket(female = false, height = 35, oblong = true);
 
