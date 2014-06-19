@@ -3,6 +3,11 @@ $fn = 60;
 
 use <lib/PneumaticConnectorCust.scad>
 use <lib/Thread_Library.scad>
+use <tip.scad>
+
+TUBE_DIAMETER = 4;
+TUBE_CLEARANCE = 0.9;
+TUBE_CLEARANCE_JAM = 0.32;
 
 HEIGHT = 14;
 
@@ -49,7 +54,8 @@ module connector(   pitch_radius = 4.5,
                     tube_thickness = TUBE_THICKNESS,
                     nut_height = 7,
                     with_link = true,
-                    link_90 = false) {
+                    link_90 = false,
+                    thread = true) {
 
     module pos_90() {
         rotate([0, 90, 30]) {
@@ -65,7 +71,10 @@ module connector(   pitch_radius = 4.5,
 
     difference() {
         union() {
-            thread(pitch_radius);
+            if (thread) {
+                thread(pitch_radius);
+            }
+
             translate([0, 0, thread_height - .1]) {
                 cylinder(r = pitch_radius * 1.1, h = nut_height, $fn = 6);
             }
@@ -102,6 +111,44 @@ module connector(   pitch_radius = 4.5,
     }
 }
 
-!connector(link_90 = true);
+module tube_pivot() {
+    height = 5;
+
+    module cyl(height, thickness, full = false) {
+        difference() {
+            cylinder(r = (TUBE_DIAMETER + thickness) / 2, h = height);
+            if (!full) {
+                cylinder(r = (TUBE_DIAMETER + TUBE_CLEARANCE_JAM) / 2, h = height * 4, center = true);
+            }
+        }
+    }
+
+    translate([0, 0, 1]) {
+        cyl(height - 1, 2);
+    }
+
+    translate([0, 0, 5]) {
+        cyl(height, 4);
+    }
+
+    translate([0, 0, 0]) {
+        difference() {
+            cyl(height, 4, full = true);
+            translate([0, 0, -1]) {
+                cyl(height * 2, 2.3, full = true);
+            }
+        }
+    }
+
+    //connector(link_90 = true, thread = false);
+}
+
+!union() {
+    tube();
+
+    tube_pivot();
+}
+
+connector(link_90 = true);
 connector(with_link = false);
 
