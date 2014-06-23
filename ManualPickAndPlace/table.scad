@@ -132,6 +132,11 @@ module sk12(hole_height = 26, base_thickness = 6, thickness = 14, fixation_hole_
     }
 }
 
+profile_slot_thickness = 2;
+module profileSlot(length, slot_thickness = profile_slot_thickness) {
+    cube(size = [5.8, length, slot_thickness], center = true);
+}
+
 rod_support_offset = 10;
 module rod_support(hole_height = 26, base_thickness = 6, thickness = 20, fixation_hole_diameter = FIXATION_HOLE_DIAMETER, screw_head_diameter = SCREW_HEAD_DIAMETER, stopper = false, stopper_thickness = 1.5) {
 
@@ -164,8 +169,8 @@ module rod_support(hole_height = 26, base_thickness = 6, thickness = 20, fixatio
             }
 
             // Fixation hole
-            translate([ 15, 0, -10 ]) {
-                cylinder(r = fixation_hole_diameter / 2, h = thickness * 2);
+            translate([ 15, 0, -3.9 ]) {
+                screw();
             }
 
             translate([ 15, 0, 3 ]) {
@@ -187,7 +192,11 @@ module rod_support(hole_height = 26, base_thickness = 6, thickness = 20, fixatio
     }
 }
 
-module blocker(hole_height = 26, base_thickness = 6, thickness = 20, fixation_hole_diameter = FIXATION_HOLE_DIAMETER, screw_head_diameter = SCREW_HEAD_DIAMETER) {
+module blocker( hole_height = 26,
+                base_thickness = 6,
+                thickness = 20,
+                fixation_hole_diameter = FIXATION_HOLE_DIAMETER,
+                screw_head_diameter = SCREW_HEAD_DIAMETER) {
 
     hole_height = 10;
     rod_clear = .2;
@@ -237,15 +246,9 @@ module blocker(hole_height = 26, base_thickness = 6, thickness = 20, fixation_ho
 
         // Fixation hole
         rotate([0, 90, 0]) {
-            translate([ PROFILE_WIDTH / 2, 0, -10 ]) {
-                cylinder(r = fixation_hole_diameter / 2, h = thickness * 2);
+            translate([ PROFILE_WIDTH / 2, 0, 8.25 ]) {
+                screw();
             }
-
-            /*
-            translate([ PROFILE_WIDTH / 2, 0, 13 ]) {
-                cylinder(r = screw_head_diameter / 2, h = thickness * 2);
-            }
-            */
         }
     }
 
@@ -256,10 +259,325 @@ module blocker(hole_height = 26, base_thickness = 6, thickness = 20, fixation_ho
     }
 }
 
-profile_slot_thickness = 2;
-module profileSlot(length, slot_thickness = profile_slot_thickness) {
-    cube(size = [5.8, length, slot_thickness], center = true);
+module screw() {
+    cylinder(r = FIXATION_HOLE_DIAMETER / 2, h = 10, center = true);
+    translate([0, 0, 5 + 0.999]) {
+        cylinder(r1 = FIXATION_HOLE_DIAMETER / 2, r2 = SCREW_HEAD_DIAMETER / 2, h = 2, center = true);
+    }
 }
+
+module stem_support() { 
+                       
+    fixation_hole_diameter = FIXATION_HOLE_DIAMETER;
+    thickness = 5;
+
+    module pos() {
+        for (pos = [
+            [ -15, 0, 0 ],
+            [ 15, 0, 0 ]
+        ]) {
+            translate(pos) {
+                if ($children) {
+                    for (i = [0 : $children - 1]) {
+                        children(i);
+                    }
+                }
+            }
+        }
+    }
+
+    difference() {
+        union() {
+            hull() {
+                pos() {
+                    cylinder(r = 10, h = thickness, center = true);
+                }
+            }
+
+            /*
+            translate([0, 0, thickness / 2 + profile_slot_thickness / 2]) {
+                rotate([0, 0, 90]) {
+                    profileSlot(20);
+                }
+            }
+            */
+
+            difference() {
+                rotate([45, 0, 0]) {
+                    cube(size = [15, 17, 17], center = true);
+                }
+
+                translate([0, 0, -7.5]) {
+                    cube(size = [50, 50, 20], center = true);
+                }
+
+                translate([0, 0, 21]) {
+                    cube(size = [50, 50, 20], center = true);
+                }
+            }
+        }
+
+        // Fixation hole
+        pos() {
+            translate([0, 0, -4.4]) {
+                screw();
+            }
+        }
+
+        rotate([45, 0, 0]) {
+            translate([0, 4, 0]) {
+                cylinder(r = 0.55, h = 100, center = true);
+            }
+        }
+    }
+}
+
+module desk(box_length = 54, box_width = 20) { 
+                       
+    fixation_hole_diameter = FIXATION_HOLE_DIAMETER;
+    thickness = 5;
+
+    module pos(width) {
+        for (pos = [
+            [ -width / 2, 0, 0 ],
+            [ width / 2, 0, 0 ]
+        ]) {
+            translate(pos) {
+                if ($children) {
+                    for (i = [0 : $children - 1]) {
+                        children(i);
+                    }
+                }
+            }
+        }
+    }
+
+    /*
+    translate([0, 0, 10]) {
+        rotate([-45, 0, 0]) {
+            difference() {
+                cube(size = [box_length, 22, 18], center = true);
+                translate([0, 0, -4]) {
+                    cube(size = [50, 18, 18], center = true);
+                }
+            }
+        }
+    }
+    */
+
+    module elec() {
+        difference() {
+            cube(size = [48, 16.5, 1.5], center = true);
+            for (pos = [
+                [ -19, 0, 0 ],
+                [ 19, 0, 0 ],
+            ]) {
+                translate(pos) {
+                    cylinder(r = 2, h = 20, center = true);
+                }
+            }
+        }
+
+        for (pos = [
+            [ -9.5, 0, 7 / 2 ],
+            [ 9.5, 0, 7 / 2 ],
+        ]) {
+            translate(pos) {
+                cylinder(r = 6, h = 7, center = true);
+                translate([0, 0, 7]) {
+                    cylinder(r = 4.5, h = 7, center = true);
+                }
+            }
+        }
+    }
+
+    difference() {
+        union() {
+            difference() {
+                hull() {
+                    pos(width = box_length + 30) {
+                        cylinder(r = 10, h = thickness, center = true);
+                    }
+                }
+
+                // Fixation hole
+                pos(width = box_length + 30) {
+                    translate([0, 0, -4.4]) {
+                        screw();
+                    }
+                }
+            }
+
+        //%cube(size = [box_length, 10, 30], center = true);
+
+            difference() {
+                hull() {
+                    translate([0, 7, thickness / 2]) {
+                        pos(width = box_length) {
+                            cylinder(r = 10, h = 0.1, center = true);
+                        }
+                    }
+
+                    translate([0, 7, thickness / 2 + 25]) {
+                        pos(width = box_length) {
+                            cylinder(r = 10, h = 0.1, center = true);
+                        }
+                    }
+
+                    translate([0, 4, 6]) {
+                        rotate([-30, 0, 0]) {
+                            cube(size = [box_length + 6, 20, 35], center = true);
+                        }
+                    }
+                }
+
+                // Top plan
+                translate([0, 0, 34]) {
+                    rotate([-30, 0, 0]) {
+                        cube(size = [box_length * 2, 60, 20], center = true);
+                    }
+                }
+
+                // Bottom plan
+                translate([0, 0, -20 / 2 - thickness / 2]) {
+                    cube(size = [100, 100, 20], center = true);
+                }
+            }
+        }
+
+        // Empty box
+        translate([0, 3, 5]) {
+            rotate([-30, 0, 0]) {
+                cube(size = [box_length, box_width, 26], center = true);
+            }
+        }
+
+        translate([0, 4, 9]) {
+            rotate([-30, 0, 0]) {
+                scale([1.1, 1.1, 1.1]) {
+                    elec();
+                }
+            }
+        }
+    }
+}
+
+/*
+module desk() { 
+                       
+    fixation_hole_diameter = FIXATION_HOLE_DIAMETER;
+    thickness = 5;
+
+    module elec() {
+        difference() {
+            cube(size = [48, 16.5, 1.5], center = true);
+            for (pos = [
+                [ -19, 0, 0 ],
+                [ 19, 0, 0 ],
+            ]) {
+                translate(pos) {
+                    cylinder(r = 2, h = 20, center = true);
+                }
+            }
+        }
+
+        for (pos = [
+            [ -9.5, 0, 7 / 2 ],
+            [ 9.5, 0, 7 / 2 ],
+        ]) {
+            translate(pos) {
+                cylinder(r = 6, h = 7, center = true);
+                translate([0, 0, 7]) {
+                    cylinder(r = 4.5, h = 7, center = true);
+                }
+            }
+        }
+    }
+
+    module pos() {
+        for (pos = [
+            [ -35, 0, 0 ],
+            [ 35, 0, 0 ]
+        ]) {
+            translate(pos) {
+                if ($children) {
+                    for (i = [0 : $children - 1]) {
+                        children(i);
+                    }
+                }
+            }
+        }
+    }
+
+    translate([0, 0, 10]) {
+        rotate([-45, 0, 0]) {
+            elec();
+        }
+    }
+
+    translate([0, 0, 10]) {
+        rotate([-45, 0, 0]) {
+            difference() {
+                cube(size = [54, 22, 18], center = true);
+                translate([0, 0, -4]) {
+                    cube(size = [50, 18, 18], center = true);
+                }
+            }
+        }
+    }
+
+    difference() {
+        union() {
+            hull() {
+                pos() {
+                    cylinder(r = 10, h = thickness, center = true);
+                }
+            }
+
+            /*
+            translate([0, 0, thickness / 2 + profile_slot_thickness / 2]) {
+                rotate([0, 0, 90]) {
+                    profileSlot(20);
+                }
+            }
+            *-/
+        }
+
+        // Fixation hole
+        pos() {
+            translate([0, 0, -4.4]) {
+                screw();
+            }
+        }
+    }
+}
+*/
+
+/*
+module cable_passes() { 
+                       
+    fixation_hole_diameter = FIXATION_HOLE_DIAMETER;
+    thickness = 5;
+
+    difference() {
+        hull() {
+            for (pos = [
+                [ -5, 0, 0 ],
+                [ 5, 0, 0 ]
+            ]) {
+                translate(pos) {
+                    cylinder(r = 10, h = thickness, center = true);
+                }
+            }
+        }
+
+        // Fixation hole
+        translate([5, 0, -4.4]) {
+            screw();
+        }
+    }
+}
+*/
 
 foot_width = PROFILE_WIDTH;
 foot_length = 15;
@@ -722,6 +1040,18 @@ module demo() {
         }
     }
 
+    translate([ 0, FRAME_WIDTH / 2 + 2.5, 10 ]) {
+        rotate([90, 0, 0]) {
+            stem_support();
+        }
+    }
+
+    translate([ -FRAME_LENGTH / 2 + 70, -FRAME_WIDTH / 2 - 2.5, 10 ]) {
+        rotate([90, 0, 0]) {
+            desk();
+        }
+    }
+
     echo($t);
 
     translate([-100, 0, 0]) {
@@ -737,7 +1067,6 @@ module demo() {
         }
     }
 }
-
 
 !demo();
 
@@ -755,6 +1084,7 @@ mirror([0, 1, 0]) {
     rod_support(stopper = true); // x2
 }
 
+/*
 union() {
     translate([ -FRAME_LENGTH / 2 + PROFILE_WIDTH / 2, -FRAME_WIDTH / 2 + rod_support_offset + 50, -PROFILE_WIDTH ]) {
         frame();
@@ -764,6 +1094,15 @@ union() {
         blocker();
     }
 }
+*/
+
+blocker();
+
+stem_support();
+
+desk();
+
+//cable_passes();
 
 dolly_x();          // x2
 

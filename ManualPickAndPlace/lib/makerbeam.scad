@@ -361,7 +361,7 @@ translate([-30,0,5])tslot(model="tslot2",h=10,w=30);
 translate([0,20,5])tslot(h=10,w=10);
 translate([20,30,5])tslot(h=10,w=20);
 translate([-30,40,5])tslot(h=10,w=30);
-translate([-60,40,5])color([1,0.5,0])tnut(h=10,w=30);
+%translate([-60,40,5])color([1,0.5,0])tnut(h=10,w=30);
 translate([-60,60,5])color([1,0.5,0])tnut(model="nut2",h=10,w=30);
 translate([-60,20,5])color([1,0.5,0])tnut(model="nut3",h=10,w=30);
 }
