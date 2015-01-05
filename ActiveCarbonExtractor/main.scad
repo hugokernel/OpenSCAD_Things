@@ -7,11 +7,19 @@ FILTER_WIDTH = 134;
 FILTER_LENGTH = 134;
 FILTER_THICKNESS = 10;
 
+FAN_WIDTH=70;
+FAN_THICKNESS=15;
+FAN_DIAMETER=67;
+HOLE_DISTANCE = 62 / 2;
+HOLE_DIAMETER = "M3";
+
+/*
 FAN_WIDTH=80;
 FAN_THICKNESS=25;
 FAN_DIAMETER=77;
 HOLE_DISTANCE = 72 / 2;
 HOLE_DIAMETER = "M3";
+*/
 
 /*
 FAN_WIDTH=120;
@@ -360,7 +368,6 @@ if (0) {
         arms();
     }
     */
-    //armsUlti();
 
     //support();
     handle();

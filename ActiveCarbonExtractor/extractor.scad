@@ -141,6 +141,58 @@ module attach() {
     }
 }
 
+module attach_standard() {
+
+    height = HANDLER_HEIGHT;
+
+    // Arm
+    difference() {
+        union() {
+            translate([0, -height, 0]) {
+                cube(size = [7, 10, 10], center = true);
+            }
+
+            translate([0, -height - 3, 0]) {
+                cube(size = [26, 5, 16], center = true);
+            }
+
+            for (pos = [
+                [-13, -3.5, 0],
+                [13, -3.5, 0],
+            ]) {
+                translate(pos) {
+                    rotate([90, 0, 0]) {
+                        cylinder(r = 8, h = 5);
+                    }
+                }
+            }
+        }
+
+        translate([0, -height - 4.6, 0]) {
+            rotate([90, 90, 0]) {
+                m4_nut();
+            }
+        }
+
+        translate([0, 75, 0]) {
+            rotate([90, 0, 0]) {
+                cylinder(r = 2.05, h = 150);
+            }
+        }
+
+        for (pos = [
+            [-12.5, 0, 0],
+            [12.5, 0, 0],
+        ]) {
+            translate(pos) {
+                rotate([90, 0, 0]) {
+                    cylinder(r = 2, h = 10);
+                }
+            }
+        }
+    }
+}
+
 module demo() {
     rotate([-90, 0, 0]) {
         support();
@@ -153,8 +205,9 @@ module demo() {
     }
 }
 
-if (0) {
+if (1) {
     attach();
+    !attach_standard();
     %verticalBase();
     //handle();
 /*
