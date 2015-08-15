@@ -23,11 +23,13 @@ module magnet(diameter=MAGNET_DIAMETER, thickness=MAGNET_THICKNESS, clearance=MA
 
 module body(length=BODY_LENGTH, width=BODY_WIDTH, thickness=BODY_THICKNESS, withrub=true) {
 
+    diam = 2;
+
     module _body() {
         depth = 2.5;
         difference() {
-            roundCornersCube(thickness + 5, width + 10, 5, 2);
-            roundCornersCube(thickness - depth, width - depth, 5, 2);
+            roundCornersCube(thickness + 5, width + 10, 5, diam);
+            roundCornersCube(thickness - depth, width - depth, 5, diam);
         }
     }
 
@@ -38,12 +40,45 @@ module body(length=BODY_LENGTH, width=BODY_WIDTH, thickness=BODY_THICKNESS, with
                 if (withrub) {
                     for (i = [-BODY_LENGTH / 2 + 5 : 4 : BODY_LENGTH / 2]) {
                         translate([0, 0, i]) {
-                            roundCornersCube(thickness + 1, width + 1, 1, 2);
+                            roundCornersCube(thickness + 1, width + 1, 1, diam);
                         }
                     }
                 }
             }
             _body();
+        }
+    }
+
+    // Round corner
+    translate([BODY_LENGTH / 2, 0, 0]) {
+        for (pos = [
+            [ 0, BODY_WIDTH / 2 - diam, BODY_THICKNESS / 2 - diam ],
+            [ 0, -BODY_WIDTH / 2 + diam, BODY_THICKNESS / 2 - diam ],
+
+            [ 0, BODY_WIDTH / 2 - diam, -BODY_THICKNESS / 2 + diam ],
+            [ 0, -BODY_WIDTH / 2 + diam, -BODY_THICKNESS / 2 + diam ]
+        ]) {
+            translate(pos) {
+                sphere(r=diam, h=10);
+            }
+        }
+
+        for (pos = [
+            [ 0, BODY_WIDTH / 2 - diam, -BODY_THICKNESS / 2 + diam, 0, BODY_THICKNESS - 2 * diam ],
+            [ 0, -BODY_WIDTH / 2 + diam, -BODY_THICKNESS / 2 + diam, 0, BODY_THICKNESS - 2 * diam ],
+
+            [ 0, BODY_WIDTH / 2 - diam, BODY_THICKNESS / 2 - diam, 90, BODY_WIDTH - 2 * diam ],
+            [ 0, BODY_WIDTH / 2 - diam, -BODY_THICKNESS / 2 + diam, 90, BODY_WIDTH - 2 * diam ],
+        ]) {
+            translate([pos[0], pos[1], pos[2]]) {
+                rotate([pos[3], 0, 0]) {
+                    cylinder(r=diam, h=pos[4]);
+                }
+            }
+        }
+
+        translate([1, 0, 0]) {
+            cube(size=[diam, BODY_WIDTH - 2 * diam, BODY_THICKNESS - 2 * diam], center=true);
         }
     }
 }
