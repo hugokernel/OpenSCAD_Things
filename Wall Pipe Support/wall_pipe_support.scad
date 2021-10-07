@@ -1,3 +1,5 @@
+include <BOSL2/std.scad>
+
 $fn = 60;
 
 LENGTH = 180;
@@ -14,19 +16,6 @@ BOLT_HEAD_DIAMETER = 9;
 NUT_DIAMETER = 8.25;
 NUT_HEIGHT = 6;
 
-module roundedBox(w,h,d,f){
-	difference(){
-        cube(size=[w, h, d], center=true);
-		translate([-w/2,h/2,0]) cube(w/(f/2),true);
-		translate([w/2,h/2,0]) cube(w/(f/2),true);
-		translate([-w/2,-h/2,0]) cube(w/(f/2),true);
-		translate([w/2,-h/2,0]) cube(w/(f/2),true);
-	}
-	translate([-w/2+w/f,h/2-w/f,-d/2]) cylinder(d,w/f, w/f);
-	translate([w/2-w/f,h/2-w/f,-d/2]) cylinder(d,w/f, w/f);
-	translate([-w/2+w/f,-h/2+w/f,-d/2]) cylinder(d,w/f, w/f);
-	translate([w/2-w/f,-h/2+w/f,-d/2]) cylinder(d,w/f, w/f);
-}
 
 module oblong(diameter, length, thickness) {
     translate([-length / 2, 0, 0]) {
@@ -74,13 +63,22 @@ module main() {
     difference() {
         union() {
             difference() {
-                roundedBox(LENGTH, WIDTH, THICKNESS, 10);
+                down(THICKNESS / 2) {
+                    resize([LENGTH, WIDTH]) {
+                        prismoid(
+                            LENGTH,
+                            LENGTH - 8,
+                            rounding=[10, 10, 10, 10],
+                            h=THICKNESS
+                        );
+                    }
+                }
 
                 for (position = [
-                    [item_position, WIDTH / 2 - 15, 0],
-                    [-item_position, WIDTH / 2 - 15, 0],
-                    [item_position, -(WIDTH / 2 - 15), 0],
-                    [-item_position, -(WIDTH / 2 - 15), 0],
+                    [item_position, WIDTH / 2 - 20, 0],
+                    [-item_position, WIDTH / 2 - 20, 0],
+                    [item_position, -(WIDTH / 2 - 20), 0],
+                    [-item_position, -(WIDTH / 2 - 20), 0],
                 ]) {
                     translate(position) {
                         translate([0, 0, -THICKNESS]) {
@@ -89,7 +87,10 @@ module main() {
                     }
                 }
 
-                roundedBox(LENGTH / 3.5, WIDTH / 1.8, THICKNESS * 2, 10);
+                cuboid(
+                    [LENGTH / 3.5, WIDTH / 1.8, THICKNESS * 4],
+                    rounding=5
+                );
             }
 
             for (x=[item_position, -item_position]) {
