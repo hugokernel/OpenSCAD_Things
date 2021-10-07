@@ -149,6 +149,21 @@ module main() {
                 cylinder(d=BOLT_DIAMETER + 0.1, h=100, center=true);
             }
         }
+
+        rot([0, 0, 90]) {
+            yflip() {
+                down(THICKNESS / 2 + 0.1) {
+                    back(item_position + 11) {
+                        fwd(-12)
+                            linear_extrude(height=1.5)
+                                text(text="Wall Pipe Support", size=10, halign="center", valign="center");
+                        fwd(0)
+                            linear_extrude(height=1.5)
+                                text(text="2.0.0 - 2021-10", size=7, halign="center", valign="center");
+                    }
+                }
+            }
+        }
     }
 }
 
