@@ -14,7 +14,7 @@ TUBE_DIAMETER = 26.9;
 BOLT_DIAMETER = 4.5;
 BOLT_HEAD_DIAMETER = 9;
 NUT_DIAMETER = 8.25;
-NUT_HEIGHT = 6;
+NUT_HEIGHT = 3.5;
 
 
 module oblong(diameter, length, thickness) {
@@ -33,33 +33,74 @@ module nut(diameter, height) {
     //%cylinder(d=7.8, h=height, $fn=40);
 }
 
-module tube_holder(diameter, length) {
+module tube(diameter, length) {
+    //cylinder(d=diameter, h=length * 2);
+
+    OVAL_LENGTH = 36.3;
+    OVAL_WIDTH = 21.3;
+    linear_extrude(length * 2) {
+        resize([36.3, 21.3])
+            circle(d=20);
+    }
+}
+
+module tube_holder_position() {
+    for (x=[item_position, -item_position]) {
+        translate([x, 0, 0]) {
+            rotate([0, 0, 90]) {
+                children();
+            }
+        }
+    }
+}
+
+module tube_holder() {
+    diameter = TUBE_DIAMETER;
+    length = 30;
     difference() {
-        hull() {
-            cube(size=[diameter * 3, length, 1], center=true);
-            translate([0, length / 2, diameter]) {
-                rotate([90, 0, 0]) {
-                    cylinder(d=diameter * 2, h=length);
+        union() {
+            hull() {
+                cube(size=[diameter * 3, length, 1], center=true);
+                translate([0, length / 2, diameter]) {
+                    rotate([90, 0, 0]) {
+                        cylinder(d=diameter * 2, h=length);
+                    }
                 }
+            }
+
+            thickness = 2;
+            down(thickness + .5 - 0.01) {
+                prismoid(
+                    size1=[diameter * 3 - 5, length - 5],
+                    size2=[diameter * 3, length],
+                    h=thickness
+                );
             }
         }
 
         translate([0, length, diameter]) {
             rotate([90, 0, 0]) {
-                cylinder(d=diameter, h=length * 2);
+                tube(diameter, length);
             }
         }
 
         translate([0, 0, diameter * 2 - 3]) {
             cylinder(d=BOLT_HEAD_DIAMETER, h=diameter);
         }
-        cylinder(d=BOLT_DIAMETER, h=diameter * 2);
+        cylinder(d=BOLT_DIAMETER, h=diameter * 5, center=true);
+
+        down(2.5) {
+            prismoid(
+                size1=[BOLT_HEAD_DIAMETER * 2, BOLT_HEAD_DIAMETER * 2],
+                size2=[BOLT_HEAD_DIAMETER * 2 - 5, BOLT_HEAD_DIAMETER * 2 - 5],
+                h=3
+            );
+        }
     }
 }
 
+item_position = LENGTH / 2 - 35;
 module main() {
-    item_position = LENGTH / 2 - 35;
-
     difference() {
         union() {
             difference() {
@@ -91,12 +132,12 @@ module main() {
                     [LENGTH / 3.5, WIDTH / 1.8, THICKNESS * 4],
                     rounding=5
                 );
-            }
 
-            for (x=[item_position, -item_position]) {
-                translate([x, 0, 0]) {
-                    rotate([0, 0, 90]) {
-                        tube_holder(TUBE_DIAMETER, 30);
+                up(2.5) {
+                    tube_holder_position() {
+                        scale([1.01, 1.01, 1]) {
+                            tube_holder();
+                        }
                     }
                 }
             }
@@ -105,16 +146,31 @@ module main() {
         for (x=[item_position, -item_position]) {
             translate([x, 0, -THICKNESS / 2 - .1]) {
                 nut(NUT_DIAMETER, NUT_HEIGHT);
+                cylinder(d=BOLT_DIAMETER + 0.1, h=100, center=true);
             }
         }
     }
 }
 
+module demo() {
+    main();
+
+    tube_holder_position() {
+        tube_holder();
+    }
+}
+
 // Test
-intersection() { translate([0, 0, 27]) cube(size=[43, 50, 35], center=true); tube_holder(TUBE_DIAMETER, 30); }
-tube_holder(TUBE_DIAMETER, 30);
 oblong(OBLONG_DIAMETER, OBLONG_LENGTH, THICKNESS);
 difference() { cylinder(d=15, h=10); translate([0, 0, -.1]) nut(NUT_DIAMETER, NUT_HEIGHT); cylinder(d=BOLT_DIAMETER, h=100); }
 
+tube_holder();
+
+intersection() {
+    main();
+    right(55)
+        cube(size=[40, 100, 10], center=true);
+}
+demo();
 !main();
 
