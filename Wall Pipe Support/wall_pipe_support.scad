@@ -100,7 +100,7 @@ module tube_holder() {
 }
 
 item_position = LENGTH / 2 - 35;
-module main() {
+module base1() {
     difference() {
         union() {
             difference() {
@@ -167,8 +167,8 @@ module main() {
     }
 }
 
-module demo() {
-    main();
+module demo1() {
+    base1();
 
     tube_holder_position() {
         tube_holder();
@@ -182,10 +182,10 @@ difference() { cylinder(d=15, h=10); translate([0, 0, -.1]) nut(NUT_DIAMETER, NU
 tube_holder();
 
 intersection() {
-    main();
+    base1();
     right(55)
         cube(size=[40, 100, 10], center=true);
 }
-demo();
-!main();
+demo1();
+base1();
 
