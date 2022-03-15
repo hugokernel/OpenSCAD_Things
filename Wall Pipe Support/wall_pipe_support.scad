@@ -34,8 +34,10 @@ module nut(diameter, height) {
 }
 
 module tube(diameter, length) {
+    // Tube have a simple cylinder section
     //cylinder(d=diameter, h=length * 2);
 
+    // Tube section is oval
     OVAL_LENGTH = 36.3;
     OVAL_WIDTH = 21.3;
     linear_extrude(length * 2) {
@@ -54,27 +56,57 @@ module tube_holder_position() {
     }
 }
 
+CONNECTOR_THICKNESS = 2;
+module connector(length, width=30, thickness=CONNECTOR_THICKNESS, male=true) {
+    scale_coeff = male ? 1 : 1.01;
+    scale([scale_coeff, scale_coeff, 1]) {
+        down(thickness / 2) {
+            difference() {
+                union() {
+                    up(1) {
+                        cube(size=[length, width, 2], center=true);
+                    }
+
+                    down(thickness - 0.01) {
+                        prismoid(
+                            size1=[length - 5, width - 5],
+                            size2=[length, width],
+                            h=thickness
+                        );
+                    }
+                }
+
+                down(2.5) {
+                    prismoid(
+                        size1=[BOLT_HEAD_DIAMETER * 2, BOLT_HEAD_DIAMETER * 2],
+                        size2=[BOLT_HEAD_DIAMETER * 2 - 5, BOLT_HEAD_DIAMETER * 2 - 5],
+                        h=3
+                    );
+                }
+
+                if (male) {
+                    cylinder(d=BOLT_DIAMETER, h=length, center=true);
+                }
+            }
+        }
+    }
+}
+
 module tube_holder() {
     diameter = TUBE_DIAMETER;
     length = 30;
-    difference() {
-        union() {
-            hull() {
-                cube(size=[diameter * 3, length, 1], center=true);
-                translate([0, length / 2, diameter]) {
-                    rotate([90, 0, 0]) {
-                        cylinder(d=diameter * 2, h=length);
-                    }
-                }
-            }
 
-            thickness = 2;
-            down(thickness + .5 - 0.01) {
-                prismoid(
-                    size1=[diameter * 3 - 5, length - 5],
-                    size2=[diameter * 3, length],
-                    h=thickness
-                );
+    down(CONNECTOR_THICKNESS / 2) {
+        connector(length=diameter * 3);
+    }
+
+    difference() {
+        hull() {
+            cube(size=[diameter * 3, length, 1], center=true);
+            translate([0, length / 2, diameter]) {
+                rotate([90, 0, 0]) {
+                    cylinder(d=diameter * 2, h=length);
+                }
             }
         }
 
@@ -89,12 +121,8 @@ module tube_holder() {
         }
         cylinder(d=BOLT_DIAMETER, h=diameter * 5, center=true);
 
-        down(2.5) {
-            prismoid(
-                size1=[BOLT_HEAD_DIAMETER * 2, BOLT_HEAD_DIAMETER * 2],
-                size2=[BOLT_HEAD_DIAMETER * 2 - 5, BOLT_HEAD_DIAMETER * 2 - 5],
-                h=3
-            );
+        translate([0, 0, diameter / 2 - 2]) {
+            cylinder(d=BOLT_HEAD_DIAMETER, h=diameter);
         }
     }
 }
@@ -155,14 +183,108 @@ module base1() {
                 down(THICKNESS / 2 + 0.1) {
                     back(item_position + 11) {
                         fwd(-12)
-                            linear_extrude(height=1.5)
+                            linear_extrude(height=1)
                                 text(text="Wall Pipe Support", size=10, halign="center", valign="center");
                         fwd(0)
-                            linear_extrude(height=1.5)
+                            linear_extrude(height=1)
                                 text(text="2.0.0 - 2021-10", size=7, halign="center", valign="center");
                     }
                 }
             }
+        }
+    }
+}
+
+module base2(length, width) {
+    difference() {
+        down(THICKNESS / 2) {
+            resize([length, width]) {
+                prismoid(
+                    length,
+                    length - 8,
+                    rounding=[10, 10, 10, 10],
+                    h=THICKNESS
+                );
+            }
+        }
+
+        for (position = [
+            [WIDTH / 2 - 45, WIDTH / 2 + 5, 0],
+            [-(WIDTH / 2) + 45, WIDTH / 2 + 5, 0],
+            [WIDTH / 2 - 45, -(WIDTH / 2 + 5), 0],
+            [-(WIDTH / 2) + 45, -(WIDTH / 2 + 5), 0],
+        ]) {
+            zrot(90)
+            translate(position) {
+                translate([0, 0, -THICKNESS]) {
+                    oblong(OBLONG_DIAMETER, OBLONG_LENGTH, THICKNESS * 2);
+                }
+            }
+        }
+
+        cuboid(
+            [length / 3.5, width / 1.5, THICKNESS * 4],
+            rounding=5
+        );
+
+        up(2.5) {
+            tube_holder_position() {
+                scale([1.01, 1.01, 1]) {
+                    tube_holder();
+                }
+            }
+        }
+
+        for (x=[item_position, -item_position]) {
+            translate([x, 0, -THICKNESS / 2 - .1]) {
+                nut(NUT_DIAMETER, NUT_HEIGHT);
+                cylinder(d=BOLT_DIAMETER + 0.1, h=100, center=true);
+            }
+        }
+    }
+}
+
+module arm() {
+    length = TUBE_DIAMETER * 3;
+    width = 30;
+    height = 100;
+
+    connector(length=length, width=width);
+
+    difference() {
+        difference() {
+            up(height / 2) {
+                cuboid(
+                    [length + 5, width + 5, height],
+                    edges=[FRONT, BACK, TOP, BOTTOM],
+                    chamfer=3, trimcorners=false,
+                    $fn=24
+                );
+            }
+
+            up(height / 2) {
+                cuboid(
+                    [length - 10, width + 6, height - 10],
+                    edges=[FRONT, BACK, TOP, BOTTOM],
+                    chamfer=12, trimcorners=false,
+                    $fn=24
+                );
+                cube(size=[length - 20, width * 2, height - 20], center=true);
+            }
+        }
+
+        up(height - CONNECTOR_THICKNESS / 2 + 0.1) {
+            connector(length=length, width=width, male=false);
+        }
+
+        cylinder(d=BOLT_DIAMETER, h=height * 3, center=true);
+
+        up(10) {
+            cylinder(d=BOLT_DIAMETER * 5, h=10, center=true);
+        }
+
+        up(height - 10) {
+            cylinder(d=BOLT_DIAMETER * 5, h=10, center=true);
         }
     }
 }
@@ -172,6 +294,19 @@ module demo1() {
 
     tube_holder_position() {
         tube_holder();
+    }
+}
+
+module demo2() {
+    base2(190, 100);
+
+    tube_holder_position() {
+        up(3) {
+            arm();
+        }
+        up(105) {
+            tube_holder();
+        }
     }
 }
 
@@ -186,6 +321,12 @@ intersection() {
     right(55)
         cube(size=[40, 100, 10], center=true);
 }
-demo1();
-base1();
 
+demo1();
+
+demo2();
+
+base1();
+!base2(190, 100);
+
+arm();
