@@ -1,5 +1,7 @@
 
-FACE_WIDTH = 50;
+$fn = 40;
+
+FACE_WIDTH = 55;
 FACE_HEIGHT = 25;
 FACE_THICKNESS = 3;
 
@@ -28,13 +30,9 @@ module holder(hole = false) {
     translate([0, FACE_HEIGHT / 2 - FACE_THICKNESS / 2, HOLDER_HEIGHT / 2 - FACE_THICKNESS / 2]) {
         rotate([90, 0, 0]) {
             if (hole) {
-                for (pos = [
-                    [-10, 0, 0],
-                    [10, 0, 0],
-                ]) {
-                    translate(pos) {
-                        cylinder(r = 3, h = 10, center = true);
-                    }
+                cylinder(r = 3, h = 10, center = true);
+                translate([0, 0, 1]) {
+                    cylinder(r = 6, h = 3, center = true);
                 }
             } else {
                 cube(size = [HOLDER_WIDTH, HOLDER_HEIGHT, HOLDER_THICKNESS], center = true);
@@ -44,11 +42,16 @@ module holder(hole = false) {
 }
 
 module main() { 
-
     difference() {
-        hull() {
-            face();
-            holder();
+        union() {
+            hull() {
+                face();
+                holder();
+            }
+
+            translate([0, FACE_HEIGHT / 2, HOLDER_HEIGHT / 2 - FACE_THICKNESS / 2]) {
+                cube(size = [HOLDER_WIDTH, 5, 7.3], center = true);
+            }
         }
 
         face(hole = true);
