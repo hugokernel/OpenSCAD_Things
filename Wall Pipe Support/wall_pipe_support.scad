@@ -11,8 +11,8 @@ OBLONG_LENGTH = 15;
 
 TUBE_DIAMETER = 26.9;
 
-BOLT_DIAMETER = 4.5;
-BOLT_HEAD_DIAMETER = 9;
+BOLT_DIAMETER = 5.3;
+BOLT_HEAD_DIAMETER = 11;
 NUT_DIAMETER = 8.25;
 NUT_HEIGHT = 3.5;
 
@@ -94,37 +94,49 @@ module connector(length, width=30, thickness=CONNECTOR_THICKNESS, male=true) {
 
 module tube_holder() {
     diameter = TUBE_DIAMETER;
-    length = 30;
+    length = 15;
 
     down(CONNECTOR_THICKNESS / 2) {
         connector(length=diameter * 3);
     }
 
+    height = 93;
+
     difference() {
-        hull() {
-            cube(size=[diameter * 3, length, 1], center=true);
-            translate([0, length / 2, diameter]) {
-                rotate([90, 0, 0]) {
-                    cylinder(d=diameter * 2, h=length);
+        union() {
+            hull() {
+                cube(size=[diameter, 30, 1], center=true);
+                translate([0, length / 2, diameter + height]) {
+                    rotate([90, 0, 0]) {
+                        cylinder(d=diameter * 2, h=length);
+                    }
                 }
             }
+
+            prismoid(
+                size1=[diameter * 3, 30],
+                size2=[diameter, length],
+                h=50
+            );
         }
 
-        translate([0, length, diameter]) {
-            rotate([90, 0, 0]) {
-                tube(diameter, length);
+        up(height) {
+            translate([0, length, diameter + 6]) {
+                rotate([90, 0, 0]) {
+                    tube(diameter, length);
+                }
+            }
+
+            translate([0, 0, diameter * 2 - 3]) {
+                cylinder(d=BOLT_HEAD_DIAMETER, h=diameter);
             }
         }
 
-        translate([0, 0, diameter * 2 - 3]) {
-            cylinder(d=BOLT_HEAD_DIAMETER, h=diameter);
-        }
-        cylinder(d=BOLT_DIAMETER, h=diameter * 5, center=true);
-
-        translate([0, 0, diameter / 2 - 2]) {
-            cylinder(d=BOLT_HEAD_DIAMETER, h=diameter);
-        }
+        down(10)
+            cylinder(d=BOLT_DIAMETER, h=diameter * 5 + height);
     }
+
+    //%cube(size=[30, 10, 100]);
 }
 
 item_position = LENGTH / 2 - 35;
@@ -323,10 +335,11 @@ intersection() {
 }
 
 demo1();
-
 demo2();
 
+!tube_holder();
+
 base1();
-!base2(190, 100);
+base2(190, 100);
 
 arm();

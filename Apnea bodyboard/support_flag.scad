@@ -6,6 +6,9 @@ HEIGHT = 28;
 THICKNESS = 9;
 HOLE_DIAMETER = 6;
 
+FLAG_TUBE_DIAMETER = 8;
+FLAG_TUBE_BORDER = 12;
+
 module nut() {
     nut_diameter = 11.2;
     nut_clear = 0.2;
@@ -14,8 +17,6 @@ module nut() {
 }
 
 module support() {
-    flag_support_diameter = 8;
-
     module corners(all = true) {
         for (pos = [
             [0, 27, 0],
@@ -46,11 +47,11 @@ module support() {
                 }
             }
 
-            cylinder(r1 = flag_support_diameter / 2 + 16, r2 = flag_support_diameter / 2 + 12, h = HEIGHT);
+            cylinder(r1 = FLAG_TUBE_DIAMETER / 2 + FLAG_TUBE_BORDER + 4, r2 = FLAG_TUBE_DIAMETER / 2 + FLAG_TUBE_BORDER, h = HEIGHT);
         }
 
         translate([0, 0, -10]) {
-            cylinder(r = flag_support_diameter / 2, h = 100);
+            cylinder(r = FLAG_TUBE_DIAMETER / 2, h = 100);
         }
 
         corners(false) {
